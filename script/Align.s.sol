@@ -7,7 +7,7 @@ import { BaseScript } from "./Base.s.sol";
 
 /// @dev See the Solidity Scripting tutorial: https://book.getfoundry.sh/tutorials/solidity-scripting
 contract Deploy is BaseScript {
-    function run() public broadcast returns (AlignTesterNFT mnft) {
-        mnft = new AlignTesterNFT("Align Tester","ATEST","");
-    }
+  function run() public broadcast returns (AlignTesterNFT mnft) {
+    mnft = new AlignTesterNFT("INTERNAL TEST", "ITEST", "");
+  }
 }
