@@ -10,13 +10,15 @@ error MaxSupply();
 error NonExistentTokenURI();
 error WithdrawTransfer();
 
-contract AlignTesterNFT is ERC721, Ownable {
+contract AlignOENFT is ERC721, Ownable {
   using Strings for uint256;
 
   string public baseURI;
   uint256 public _totalSupply;
-  uint256 public constant MAX_SUPPLY = 10000;
-  uint256 public constant MINT_PRICE = 0.001 ether;
+  uint256 public constant MINT_PRICE = 0.1 ether;
+
+  // Mapping to track the number of NFTs minted by each address
+  mapping(address => uint256) public mintedCount;
 
   constructor(string memory _name, string memory _symbol, string memory _baseURI) ERC721(_name, _symbol) Ownable() {
     baseURI = _baseURI;
@@ -27,10 +29,9 @@ contract AlignTesterNFT is ERC721, Ownable {
       revert MintPriceNotPaid();
     }
 
-    if (_totalSupply >= MAX_SUPPLY) {
-      revert MaxSupply();
-    }
     _safeMint(recipient, _totalSupply);
+    // Increment the count of NFTs minted by the recipient
+    mintedCount[recipient]++;
     _totalSupply++;
     return _totalSupply;
   }
@@ -53,5 +54,10 @@ contract AlignTesterNFT is ERC721, Ownable {
 
   function totalSupply() public view returns (uint256) {
     return _totalSupply;
+  }
+
+  // Function to check if an address has minted an NFT
+  function hasMinted(address _address) public view returns (uint256) {
+    return mintedCount[_address] > 0 ? mintedCount[_address] : 0;
   }
 }
