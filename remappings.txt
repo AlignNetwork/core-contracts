@@ -5,3 +5,4 @@ forge-std/=node_modules/forge-std
 hardhat/=node_modules/hardhat/
 solmate/=node_modules/solmate/
 @ethereum-attestation-service/eas-contracts/=node_modules/@ethereum-attestation-service/eas-contracts/
+hyperlane-xyz/=node_modules/@hyperlane-xyz/monorepo/solidity/contracts/

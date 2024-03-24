@@ -1,0 +1,46 @@
+{
+  "chainInfo": {
+    "minL2BaseFee": 100000000,
+    "networkFeeReceiver": "0xC757Ea4aB36B80C5e61b5CCF74deE5C1dfd2936E",
+    "infrastructureFeeCollector": "0xC757Ea4aB36B80C5e61b5CCF74deE5C1dfd2936E",
+    "batchPoster": "0x6f90641157eB11a15E492Af2eBa0fd39f215b3D9",
+    "staker": "0x297A39d6db905157FB68Ca646ad898fcBeA500Db",
+    "chainOwner": "0x40CeeA170fBA66c9CbF144885A33844914688D67",
+    "chainName": "Align",
+    "chainId": 472382,
+    "parentChainId": 111555111,
+    "rpcUrl": "https://v2.rpc.align.network",
+    "explorerUrl": "https://v2.explorer.align.network",
+    "nativeToken": "0x0000000000000000000000000000000000000000"
+  },
+  "coreContracts": {
+    "rollup": "0xd69eaCFE5c64595bB8902bDF8F81E1BBf56153A3",
+    "inbox": "0xE703F94f4eA3b17b180d9F58e4D2fE6CB1408dBE",
+    "outbox": "0x135beA3e583A011cBCB15902747923FE923B7890",
+    "adminProxy": "0xCee0b4A383CFb323a68ab76e877E60AbC2aa676f",
+    "sequencerInbox": "0x9C109268a551454485cccfcFF93e7001046c6E74",
+    "bridge": "0x95867512F0DedD904568EA3ee7D986aCcA44a8aa",
+    "utils": "0xB11EB62DD2B352886A4530A9106fE427844D515f",
+    "validatorWalletCreator": "0xEb9885B6c0e117D339F47585cC06a2765AaE2E0b"
+  },
+  "tokenBridgeContracts": {
+    "l2Contracts": {
+      "customGateway": "0xdaa96ab74e65521F5bd64Ab96CA1746f7126AccD",
+      "multicall": "0xce1CAd780c529e66e3aa6D952a1ED9A6447791c1",
+      "proxyAdmin": "0xCee0b4A383CFb323a68ab76e877E60AbC2aa676f",
+      "router": "0x9D82352222780002A552F641F3255465b433605D",
+      "standardGateway": "0x925C8642E05a505eeF4a8Aaea6bfC9CE71FD35E1",
+      "weth": "0x980B62Da83eFf3D4576C647993b0c1D7faf17c73",
+      "wethGateway": "0x4fcdA5d8DC642e0063eDAe8332B7e36189929F9b"
+    },
+    "l3Contracts": {
+      "customGateway": "0x84b244cFE8EDE5E6D596d4C3f9084E54C789c62C",
+      "multicall": "0x9982CC7773d2C28056eBca6237448DE4b6FbC891",
+      "proxyAdmin": "0x7d64E77805e6e16753C9EF66466e73460030d448",
+      "router": "0xFe8d4978D9eCdb1c24FE4fE3679ae069aDe21c60",
+      "standardGateway": "0xd0a49cD64DFC8b9bAf0f5BAD32B90c76593Fc673",
+      "weth": "0xB4deAd764Ab8a6A836313de6a3310AE496A0e349",
+      "wethGateway": "0x9d1E36a37C05E5726B9DA5D9B29fFaFFf244CC7d"
+    }
+  }
+}

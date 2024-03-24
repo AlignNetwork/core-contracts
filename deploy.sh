@@ -7,7 +7,7 @@ deploy_script() {
     echo "Deploying $script_name..."
     unset PRIVATE_KEY
     unset ETH_FROM
-    source .env && forge script script/$script_name:Deploy --fork-url $RPC_URL --broadcast --private-key $PRIVATE_KEY --legacy --skip-simulation --gas-price 0 --gas-limit 1000000000
+    source .env && forge script script/$script_name:Deploy --fork-url $RPC_URL --broadcast --private-key $PRIVATE_KEY --legacy --skip-simulation --gas-price 0 --gas-limit 1000000000 -vvvv
     #localhost: 
     #source .env && forge script script/$script_name:Deploy --rpc-url http://localhost:8545 --broadcast
 
@@ -32,7 +32,19 @@ case $1 in
         # Deploy Align Open Edition
         deploy_script "AlignOE.s.sol"
         ;;
+    AIR)
+        # Deploy AlignIdRegistry
+        deploy_script "AlignIdRegistry.s.sol"
+        ;;
+    00)
+        # Deploy Align Attestation Station
+        deploy_script "00_AlignAttestationStation.s.sol"
+        ;;
+    01)
+        # Deploy Setup Align Attestation Station
+        deploy_script "01_AttestOne.s.sol"
+        ;;
     *)
-        echo "Usage: $0 {AR|VR}"
+        echo "Usage: $0 {AR|VR|AOE|AIR|AAS|A}"
         exit 1
 esac

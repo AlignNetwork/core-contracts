@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 
-contract AlignId {
-  address public admin;
+import "./auth/Ownable.sol";
 
+contract AlignIdRegistry is Ownable {
   // ids
   mapping(address owner => uint256 alignId) public idOf;
   error IdExists();
@@ -18,8 +18,8 @@ contract AlignId {
   mapping(uint256 alignId => address custody) public custodyOf;
   mapping(uint256 alignId => address recovery) public recoveryOf;
 
-  constructor(address _admin) {
-    admin = _admin;
+  constructor() {
+    _initializeOwner(msg.sender);
   }
 
   /// @notice Registers a new ID for a user
@@ -27,9 +27,7 @@ contract AlignId {
   /// @param recovery The recovery address associated with the new ID
   /// @return alignId The new unique ID assigned to the user
   /// @dev Emits a `Register` event upon successful registration
-  function register(address to, address recovery) public returns (uint256 alignId) {
-    // if no id, check if from admin
-    if (msg.sender != admin) revert("only admin can register");
+  function register(address to, address recovery) public onlyOwner returns (uint256 alignId) {
     if (idOf[to] != 0) {
       revert IdExists();
     }
@@ -57,7 +55,7 @@ contract AlignId {
   /// @notice Retrieves or assigns an ID for a given address
   /// @param to The address to retrieve or assign an ID for
   /// @return alignId The ID of the given address
-  function getId(address to) public view returns (uint256 alignId) {
+  function readId(address to) public view returns (uint256 alignId) {
     // if no id, then register
     alignId = idOf[to];
     if (alignId == 0) revert NoId();

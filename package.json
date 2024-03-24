@@ -7,6 +7,9 @@
     "url": "https://github.com/AlignNetwork"
   },
   "dependencies": {
+    "@hyperlane-xyz/monorepo": "github:hyperlane-xyz/hyperlane-monorepo",
+    "keccak256": "^1.0.6",
+    "merkletreejs": "^0.3.11",
     "openzeppelin-foundry-upgrades": "github:OpenZeppelin/openzeppelin-foundry-upgrades",
     "openzeppelin-solidity": "github:OpenZeppelin/openzeppelin-contracts#v4.9.5",
     "solmate": "github:transmissions11/solmate"
