@@ -1,3 +1,23 @@
+# Align Id
+
+Register Id so that you can interact with the AAS and reputation system
+
+# Align Attestation Station (AAS)
+
+register Type - register a type
+
+attest - either:
+
+Attestor attests you claimed something (going thru a public attestor) i.e. twitter post
+
+OR
+
+Attestor attests they claimed something (personal attestation i.e. blog)
+
+# Registry
+
+Store claimtypes on IPFS:
+
 # Foundry Template [![Open in Gitpod][gitpod-badge]][gitpod] [![Github Actions][gha-badge]][gha] [![Foundry][foundry-badge]][foundry] [![License: MIT][license-badge]][license]
 
 [gitpod]: https://gitpod.io/#https://github.com/AlignNetwork/core-contracts

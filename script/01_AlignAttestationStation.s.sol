@@ -8,9 +8,7 @@ import "forge-std/src/console2.sol";
 
 contract Deploy is BaseScript {
   function run() public broadcast returns (AlignAttestationStation alignStationImpl) {
-    AlignIdRegistry aidr = new AlignIdRegistry();
+    AlignIdRegistry aidr = AlignIdRegistry(0xaB128F232027dE26093E1A3e18179D81455a18Ea);
     alignStationImpl = new AlignAttestationStation(address(aidr)); // Replace address(1) with your admin address
-    // Register Deployer as the first Align Id
-    aidr.register(address(broadcaster), address(broadcaster));
   }
 }

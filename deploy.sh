@@ -32,17 +32,29 @@ case $1 in
         # Deploy Align Open Edition
         deploy_script "AlignOE.s.sol"
         ;;
-    AIR)
-        # Deploy AlignIdRegistry
-        deploy_script "AlignIdRegistry.s.sol"
-        ;;
     00)
-        # Deploy Align Attestation Station
-        deploy_script "00_AlignAttestationStation.s.sol"
+        # Deploy AlignIdRegistry
+        deploy_script "00_AlignIdRegistry.s.sol"
         ;;
     01)
+        # Deploy Align Attestation Station
+        deploy_script "01_AlignAttestationStation.s.sol"
+        ;;
+    02)
+        # DeployMint Align ID attestation
+        deploy_script "02_AttestMintAlignId.s.sol"
+        ;;
+    03)
         # Deploy Setup Align Attestation Station
-        deploy_script "01_AttestOne.s.sol"
+        deploy_script "03_TokenPriceClaim.s.sol"
+        ;;
+    04)
+        # Deploy Setup Align Attestation Station
+        deploy_script "04_AlignPost.s.sol"
+        ;;
+    05)
+        # Deploy Setup Align Attestation Station
+        deploy_script "05_AlignFollow.s.sol"
         ;;
     *)
         echo "Usage: $0 {AR|VR|AOE|AIR|AAS|A}"

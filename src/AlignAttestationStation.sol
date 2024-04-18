@@ -11,11 +11,13 @@ contract AlignAttestationStation is Ownable {
   error NotAdmin();
   error NoClaimType();
   error ClaimTypeExists();
+  error AlreadyAttested();
+  error NotAttester();
 
   struct Attestation {
-    bytes32 attesterKey;
-    bytes32 claim;
-    bytes32 claimProof;
+    bytes32 attestationKey;
+    string claim;
+    string claimProof;
   }
 
   struct ClaimTypeRecord {
@@ -23,30 +25,42 @@ contract AlignAttestationStation is Ownable {
     uint256 attesterAlignId;
     string claimType;
     string claimLink;
+    bool fungible;
+    bool onlyAttesterCanAttest;
   }
 
   /// @notice Emitted when a new attestation is made
+  /// @param claimTypeKey The key of the claim being attested to
   /// @param attesterAlignId The address of the attester
   /// @param toAlignId The unique ID of the user for whom the attestation is made
-  /// @param claimTypeKey The key of the claim being attested to
   /// @param claim The claim data
   /// @param claimProof Proof of the claim
+  /// @param attestationKey2 The key of the attestation
   event Attested(
-    uint256 indexed attesterAlignId,
-    uint256 indexed toAlignId,
     bytes32 indexed claimTypeKey,
-    bytes32 claim,
-    bytes32 claimProof
+    uint256 attesterAlignId,
+    uint256 toAlignId,
+    string claim,
+    string claimProof,
+    bytes32 attestationKey2
   );
 
-  mapping(bytes32 attestationKey => Attestation attestation) private _attestations;
+  mapping(bytes32 attestationKey => mapping(bytes32 => Attestation attestation)) private _attestations;
   mapping(bytes32 claimTypeKey => ClaimTypeRecord claimTypeRecord) private _claimTypeRegistry;
 
   /// @notice Emitted when a new type is stored
+  /// @param claimTypeKey The key of the claim being stored
   /// @param attesterAlignId The address of the attester
-  /// @param attestType The type of attestation being stored
+  /// @param claimType The type of attestation being stored
   /// @param claimLink The link to additional Information about the Claim
-  event ClaimTypeRegistered(uint256 indexed attesterAlignId, string indexed attestType, string claimLink);
+  /// @param fungible Whether the claim is fungible
+  event ClaimTypeRegistered(
+    bytes32 indexed claimTypeKey,
+    uint256 attesterAlignId,
+    string claimType,
+    string claimLink,
+    bool fungible
+  );
 
   // id Contract
   AlignIdRegistry public alignIdContract;
@@ -58,39 +72,61 @@ contract AlignAttestationStation is Ownable {
   }
 
   /// @notice Allows an attester to attest a claim for a user
-  /// @param attesterAlignId The address of the attester making the attestation
   /// @param toAlignId The address of the user for whom the attestation is being made
   /// @param claimTypeKey The key of the claim being attested to
   /// @param claim The claim data
   /// @param claimProof Proof of the claim
   /// @dev Emits an `Attested` event upon successful attestation claimTypeKey = keccak256(abi.encode(attesterAlignId, attestType));
-  function attest(
-    uint256 attesterAlignId,
-    uint256 toAlignId,
-    bytes32 claimTypeKey,
-    bytes32 claim,
-    bytes32 claimProof
-  ) external onlyOwner {
-    // Create AttestionKey
-    bytes32 attestationKey = keccak256(abi.encodePacked(attesterAlignId, toAlignId, claimTypeKey));
+  function attest(uint256 toAlignId, bytes32 claimTypeKey, string calldata claim, string calldata claimProof) external {
+    uint256 attesterAlignId = alignIdContract.readId(msg.sender);
+
     // check if claimTypeKey exists in attesterToClaimType
     if (_claimTypeRegistry[claimTypeKey].claimTypeKey == 0) revert NoClaimType();
 
-    // store the attestation by user, attester, and type
-    _attestations[attestationKey] = Attestation(attestationKey, claim, claimProof);
+    // check if attester is allowed to attest
+    if (
+      _claimTypeRegistry[claimTypeKey].onlyAttesterCanAttest &&
+      attesterAlignId != _claimTypeRegistry[claimTypeKey].attesterAlignId
+    ) revert NotAttester();
 
-    emit Attested(attesterAlignId, toAlignId, claimTypeKey, claim, claimProof);
+    // Create AttestionKey
+    bytes32 attestationKey = keccak256(abi.encodePacked(attesterAlignId, toAlignId, claimTypeKey));
+    bytes32 attestationKey2 = 0;
+
+    if (_claimTypeRegistry[claimTypeKey].fungible == false) {
+      if (_attestations[attestationKey][attestationKey2].attestationKey != 0) revert AlreadyAttested();
+      _attestations[attestationKey][attestationKey2] = Attestation(attestationKey, claim, claimProof);
+    } else {
+      attestationKey2 = keccak256(abi.encodePacked(claim));
+      if (_attestations[attestationKey][attestationKey2].attestationKey != 0) revert AlreadyAttested();
+      _attestations[attestationKey][attestationKey2] = Attestation(attestationKey, claim, claimProof);
+    }
+
+    emit Attested(claimTypeKey, attesterAlignId, toAlignId, claim, claimProof, attestationKey2);
   }
 
-  function getAttestation(
+  function getAttestationFungible(
+    uint256 attesterAlignId,
+    uint256 toAlignId,
+    bytes32 claimTypeKey,
+    string calldata claimIn
+  ) external view returns (string memory claimOut, string memory claimProof) {
+    bytes32 attestationKey = keccak256(abi.encodePacked(attesterAlignId, toAlignId, claimTypeKey));
+    bytes32 attestationKey2 = keccak256(abi.encodePacked(claimIn));
+    attestationKey = _attestations[attestationKey][attestationKey2].attestationKey;
+    claimOut = _attestations[attestationKey][attestationKey2].claim;
+    claimProof = _attestations[attestationKey][attestationKey2].claimProof;
+  }
+
+  function getAttestationNonFungible(
     uint256 attesterAlignId,
     uint256 toAlignId,
     bytes32 claimTypeKey
-  ) external view returns (bytes32 attesterKey, bytes32 claim, bytes32 claimProof) {
+  ) external view returns (string memory claimOut, string memory claimProof) {
     bytes32 attestationKey = keccak256(abi.encodePacked(attesterAlignId, toAlignId, claimTypeKey));
-    attesterKey = _attestations[attestationKey].attesterKey;
-    claim = _attestations[attestationKey].claim;
-    claimProof = _attestations[attestationKey].claimProof;
+    attestationKey = _attestations[attestationKey][0].attestationKey;
+    claimOut = _attestations[attestationKey][0].claim;
+    claimProof = _attestations[attestationKey][0].claimProof;
   }
 
   /*   /// @notice Retrieves the claim for a specific attester and type
@@ -104,22 +140,30 @@ contract AlignAttestationStation is Ownable {
   }
 
   /// @notice Stores a new type of attestation for an attester
-  /// @param attesterAlignId The address of the attester
   /// @param claimType The type of attestation being stored
   /// @param claimLink The link to additional Information about the Claim
   /// @dev Emits a `ClaimTypeStored` event upon successful storage
   function registerType(
-    uint256 attesterAlignId,
+    bool fungible,
     string calldata claimType,
-    string calldata claimLink
-  ) external onlyOwner {
+    string calldata claimLink,
+    bool onlyAttesterCanAttest
+  ) external {
+    uint256 attesterAlignId = alignIdContract.readId(msg.sender);
     bytes32 claimTypeKey = keccak256(abi.encodePacked(attesterAlignId, claimType));
 
     if (_claimTypeRegistry[claimTypeKey].claimTypeKey != 0) revert ClaimTypeExists();
 
-    _claimTypeRegistry[claimTypeKey] = ClaimTypeRecord(claimTypeKey, attesterAlignId, claimType, claimLink);
+    _claimTypeRegistry[claimTypeKey] = ClaimTypeRecord(
+      claimTypeKey,
+      attesterAlignId,
+      claimType,
+      claimLink,
+      fungible,
+      onlyAttesterCanAttest
+    );
 
-    emit ClaimTypeRegistered(attesterAlignId, claimType, claimLink);
+    emit ClaimTypeRegistered(claimTypeKey, attesterAlignId, claimType, claimLink, fungible);
   }
 
   function isClaimTypeRegistered(bytes32 claimTypeKey) external view returns (bool) {

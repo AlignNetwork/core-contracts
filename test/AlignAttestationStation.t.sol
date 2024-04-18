@@ -12,8 +12,10 @@ contract AlignStationTest is PRBTest {
   address private admin = address(1);
   address private to = address(3);
   string private claimType = "NYC Marathon Badge 2017"; // or prediction etc.
-  bytes32 private claim = keccak256("I ran the NYC marathon on 11-05-2017");
-  bytes32 private claimProof = keccak256("https://results.nyrr.org/runner/1111/result/M2017");
+  string private claimType2 = "NYC Marathon Badge 2018"; // or prediction etc.
+  string private claim = "I ran the NYC marathon on 11-05-2017";
+  string private claim2 = "I ran the NYC marathon on 11-05-2018";
+  string private claimProof = "https://results.nyrr.org/runner/1111/result/M2017";
   string private claimLink = "https://results.nyrr.org/runner/";
 
   function setUp() public {
@@ -38,7 +40,7 @@ contract AlignStationTest is PRBTest {
     bytes32 claimTypeKey = keccak256(abi.encodePacked(adminAlignId, claimType));
     bytes32 attestationKey = keccak256(abi.encodePacked(adminAlignId, toAlignId, claimTypeKey));
 
-    aas.registerType(adminAlignId, claimType, claimLink);
+    aas.registerType(adminAlignId, false, claimType, claimLink);
     assertTrue(aas.isClaimTypeRegistered(claimTypeKey), "Claim type should be registered");
 
     // Attesting
@@ -46,16 +48,58 @@ contract AlignStationTest is PRBTest {
     aas.attest(adminAlignId, toAlignId, claimTypeKey, claim, claimProof);
 
     // Check the attestation
-    (bytes32 attesterKeyOut, bytes32 storedClaim, bytes32 storedClaimProof) = aas.getAttestation(
+    (string memory storedClaim, string memory storedClaimProof) = aas.getAttestationNonFungible(
       adminAlignId,
       toAlignId,
       claimTypeKey
     );
-    assertEq(attesterKeyOut, attestationKey, "Attester key does not match");
+    console2.logString(storedClaim);
     assertEq(storedClaim, claim, "Claim data does not match");
     assertEq(storedClaimProof, claimProof, "Claim proof does not match");
-    /*     // Event assertions
-    vm.expectEmit(true, true, true, true);
-    emit alignStation.Attested(attester, userAlignId, attestType, claim, claimProof); */
+
+    vm.expectRevert(bytes4(keccak256("AlreadyAttested()")));
+    aas.attest(adminAlignId, toAlignId, claimTypeKey, claim, claimProof);
+  }
+
+  function testRegisterFungible() public {
+    // Attester = Admin
+    uint256 adminAlignId = alignIdContract.idOf(admin);
+    uint256 toAlignId = alignIdContract.idOf(to);
+    bytes32 claimTypeKey = keccak256(abi.encodePacked(adminAlignId, claimType2));
+    bytes32 attestationKey = keccak256(abi.encodePacked(adminAlignId, toAlignId, claimTypeKey));
+
+    aas.registerType(adminAlignId, true, claimType2, claimLink);
+    assertTrue(aas.isClaimTypeRegistered(claimTypeKey), "Claim type should be registered");
+
+    // Attesting
+    console2.log(block.timestamp);
+    // Attempt to attest a claim
+    aas.attest(adminAlignId, toAlignId, claimTypeKey, claim, claimProof);
+
+    // Check the attestation
+    (string memory storedClaim, string memory storedClaimProof) = aas.getAttestationFungible(
+      adminAlignId,
+      toAlignId,
+      claimTypeKey,
+      claim
+    );
+    console2.logString(storedClaim);
+    assertEq(storedClaim, claim, "Claim data does not match");
+    assertEq(storedClaimProof, claimProof, "Claim proof does not match");
+
+    aas.attest(adminAlignId, toAlignId, claimTypeKey, claim2, claimProof);
+
+    (string memory storedClaim2, string memory storedClaimProof2) = aas.getAttestationFungible(
+      adminAlignId,
+      toAlignId,
+      claimTypeKey,
+      claim2
+    );
+    assertEq(storedClaim2, claim2, "Claim data does not match");
+    assertEq(storedClaimProof2, claimProof, "Claim proof does not match");
+
+    vm.expectRevert(bytes4(keccak256("AlreadyAttested()")));
+    aas.attest(adminAlignId, toAlignId, claimTypeKey, claim, claimProof);
+    //aas.attest(adminAlignId, toAlignId, claimTypeKey, claim, claimProof);
   }
 }
