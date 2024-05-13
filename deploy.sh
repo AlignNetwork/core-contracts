@@ -7,7 +7,7 @@ deploy_script() {
     echo "Deploying $script_name..."
     unset PRIVATE_KEY
     unset ETH_FROM
-    source .env && forge script script/$script_name:Deploy --fork-url $RPC_URL --broadcast --private-key $PRIVATE_KEY --legacy --skip-simulation --gas-price 0 --gas-limit 1000000000 -vvvv
+    source .env && forge script script/$script_name:Deploy --fork-url $RPC_URL --broadcast --private-key $PRIVATE_KEY --legacy --skip-simulation --gas-price 0 --gas-limit 1000000000 -vvv
     #localhost: 
     #source .env && forge script script/$script_name:Deploy --rpc-url http://localhost:8545 --broadcast
 
@@ -55,6 +55,14 @@ case $1 in
     05)
         # Deploy Setup Align Attestation Station
         deploy_script "05_AlignFollow.s.sol"
+        ;;
+    06)
+        # Deploy Setup Align Attestation Station
+        deploy_script "06_AlignProfile.s.sol"
+        ;;
+    07)
+        # Deploy Setup Align Attestation Station
+        deploy_script "07_AlignZKTwitter.s.sol"
         ;;
     *)
         echo "Usage: $0 {AR|VR|AOE|AIR|AAS|A}"
