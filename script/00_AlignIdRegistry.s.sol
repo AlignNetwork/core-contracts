@@ -10,6 +10,6 @@ contract Deploy is BaseScript {
   function run() public broadcast returns (AlignIdRegistry aidr) {
     aidr = new AlignIdRegistry();
     // Register Deployer as the first Align Id
-    aidr.register(address(broadcaster), address(broadcaster));
+    aidr.register(address(broadcaster));
   }
 }

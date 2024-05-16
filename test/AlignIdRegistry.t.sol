@@ -7,8 +7,7 @@ import "forge-std/src/console2.sol";
 
 contract AlignIdTest is PRBTest {
   AlignIdRegistry alignId;
-  address admin = address(1);
-  address user = address(2);
+  address user = address(1);
 
   function setUp() public {
     alignId = new AlignIdRegistry();
@@ -16,9 +15,7 @@ contract AlignIdTest is PRBTest {
 
   function testACase_Register() public {
     // Register a new ID for the user
-    vm.startPrank(admin);
-    alignId.register(user, address(0));
-    vm.stopPrank();
+    alignId.register(user);
 
     // Check that the ID was registered
     uint256 alignIdOfUser = alignId.idOf(user);
@@ -27,14 +24,12 @@ contract AlignIdTest is PRBTest {
 
   function testRegisterShouldFailWithIdExists() public {
     // Register a new ID for the user
-    vm.startPrank(admin);
-    alignId.register(user, address(0));
-    vm.stopPrank();
+    alignId.register(address(1));
 
     // Attempt to register the ID again
     vm.expectRevert(bytes4(keccak256("IdExists()")));
-    vm.prank(admin);
-    alignId.register(user, address(0));
+    vm.prank(address(1));
+    alignId.register(user);
   }
 
   // to make internal testing easier - should pass bc i commented out the admin check
@@ -42,6 +37,6 @@ contract AlignIdTest is PRBTest {
   function testCCase_RegisterFromNonAdmin() public {
     // Attempt to register an ID from a non-admin address
     vm.prank(user);
-    alignId.register(user, address(0));
+    alignId.register(user);
   }
 }

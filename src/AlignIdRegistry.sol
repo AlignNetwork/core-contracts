@@ -8,15 +8,15 @@ contract AlignIdRegistry is Ownable {
   mapping(address owner => uint256 alignId) public idOf;
   error IdExists();
   error NoId();
+  error NotId();
+  error IncorrectId();
+
   uint256 public idCounter;
 
   /// @notice Emitted when a new ID is registered
   /// @param to The address of the user being registered
   /// @param id The unique ID assigned to the user
-  /// @param recovery The recovery address associated with the user
-  event Register(address indexed to, uint256 indexed id, address recovery);
-  mapping(uint256 alignId => address custody) public custodyOf;
-  mapping(uint256 alignId => address recovery) public recoveryOf;
+  event Register(address indexed to, uint256 indexed id);
 
   constructor() {
     _initializeOwner(msg.sender);
@@ -24,39 +24,26 @@ contract AlignIdRegistry is Ownable {
 
   /// @notice Registers a new ID for a user
   /// @param to The address of the user being registered
-  /// @param recovery The recovery address associated with the new ID
   /// @return alignId The new unique ID assigned to the user
   /// @dev Emits a `Register` event upon successful registration
-  function register(address to, address recovery) public onlyOwner returns (uint256 alignId) {
+  function register(address to) public returns (uint256 alignId) {
     if (idOf[to] != 0) {
       revert IdExists();
     }
-    /* Safety: idCounter won't realistically overflow. */
-    unchecked {
-      /* Incrementing before assignment ensures that no one gets the 0 alignId. */
-      alignId = ++idCounter;
-    }
 
-    _unsafeRegister(alignId, to, recovery);
-  }
+    // first user would be id 1
+    alignId = ++idCounter;
 
-  /// @dev Registers the alignId without checking invariants for internal use
-  /// @param id The unique ID to be registered
-  /// @param to The address of the user
-  /// @param recovery The recovery address associated with the ID
-  function _unsafeRegister(uint256 id, address to, address recovery) internal {
-    idOf[to] = id;
-    custodyOf[id] = to;
-    recoveryOf[id] = recovery;
+    idOf[to] = alignId;
 
-    emit Register(to, id, recovery);
+    emit Register(to, alignId);
   }
 
   /// @notice Retrieves or assigns an ID for a given address
   /// @param to The address to retrieve or assign an ID for
   /// @return alignId The ID of the given address
   function readId(address to) public view returns (uint256 alignId) {
-    // if no id, then register
+    // if no id, then revert
     alignId = idOf[to];
     if (alignId == 0) revert NoId();
   }
