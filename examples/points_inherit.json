@@ -1,0 +1,11 @@
+{
+  "version": "0.1.0",
+  "name": "Align Testnet Program 1",
+  "summary": "This is a points tracker for the Align Testnet Program 1.",
+  "content": {
+    "programStart": "UNIX timestamp of program start",
+    "programEnd": "UNIX timestamp of program end",
+    "reasons": []
+  },
+  "inherits": ["0xeb5b8c1f556f61bc01e9276ec4536dbe23e4240b8487374f984d6031e5cd21dc"]
+}

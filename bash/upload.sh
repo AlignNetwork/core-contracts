@@ -15,5 +15,10 @@ upload() {
       echo "Error uploading data check network connection"
       exit 1
   fi
-  echo "$response"
+
+  name=$(echo "$data" | grep -o '"name": "[^"]*' | sed 's/"name": "//')
+  cid_field=$(echo "$response" | grep -o '"cid":"[^"]*' | sed 's/"cid":"//' | sed 's/".*//')
+
+
+  echo -e "$name - $cid_field"
 }

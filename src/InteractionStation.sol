@@ -102,7 +102,7 @@ contract InteractionStation is Ownable {
     string calldata link,
     bytes32[] calldata referenceKeys
   ) external returns (bytes32 key) {
-    verifyIPFS.isCID(link);
+    verifyIPFS.isCIDv1(link);
     uint256 issuerAlignId = alignIdContract.readId(msg.sender);
     key = keccak256(abi.encodePacked(issuerAlignId, name));
 
@@ -180,7 +180,7 @@ contract InteractionStation is Ownable {
     uint256 issuerAlignId,
     uint256 toAlignId,
     bytes32 interactionTypeKey,
-    string calldata interactionData // Assuming you can provide the data to identify the correct fungible interaction
+    string calldata interactionData
   ) external view returns (string memory interaction) {
     bytes32 interactionKey = keccak256(abi.encodePacked(issuerAlignId, toAlignId, interactionTypeKey));
     bytes32 fungibleKey = keccak256(abi.encodePacked(interactionData)); // Now correctly using interaction data for the fungible key
@@ -203,11 +203,11 @@ contract InteractionStation is Ownable {
 
   /// @notice Retrieves the claim for a specific issuer and type
   /// @param issuerAlignId The address of the issuer
-  /// @param interaction The type of claim being retrieved
+  /// @param name The  being retrieved
   /// @return interactionKey The key of the interaction
   /// @dev Reverts if no ID exists for the given address
-  function getInteractionKey(uint256 issuerAlignId, string calldata interaction) external pure returns (bytes32) {
-    return keccak256(abi.encodePacked(issuerAlignId, interaction));
+  function getInteractionTypeKey(uint256 issuerAlignId, string calldata name) external pure returns (bytes32) {
+    return keccak256(abi.encodePacked(issuerAlignId, name));
   }
 
   /// @notice Adds a new interaction link to a interaction type

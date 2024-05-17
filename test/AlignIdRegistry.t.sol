@@ -7,7 +7,8 @@ import "forge-std/src/console2.sol";
 
 contract AlignIdTest is PRBTest {
   AlignIdRegistry alignId;
-  address user = address(1);
+  address admin = address(1);
+  address user = address(2);
 
   function setUp() public {
     alignId = new AlignIdRegistry();
@@ -24,19 +25,28 @@ contract AlignIdTest is PRBTest {
 
   function testRegisterShouldFailWithIdExists() public {
     // Register a new ID for the user
-    alignId.register(address(1));
+    alignId.register(user);
 
     // Attempt to register the ID again
     vm.expectRevert(bytes4(keccak256("IdExists()")));
-    vm.prank(address(1));
     alignId.register(user);
   }
 
-  // to make internal testing easier - should pass bc i commented out the admin check
-  // so anyone can register
   function testCCase_RegisterFromNonAdmin() public {
     // Attempt to register an ID from a non-admin address
-    vm.prank(user);
+    vm.expectRevert(bytes4(keccak256("Unauthorized()")));
+    vm.startPrank(user);
     alignId.register(user);
+    vm.stopPrank();
+  }
+
+  function testDCase_RegisterDev() public {
+    // Register a new ID for the user
+    alignId.registerDev(user);
+
+    // Check that the ID was registered
+    uint256 alignIdOfUser = alignId.idOf(user);
+    console2.log("alignIdOfUser: %s", alignIdOfUser);
+    assertEq(alignIdOfUser, 10_002, "User should have an ID of 10_001");
   }
 }

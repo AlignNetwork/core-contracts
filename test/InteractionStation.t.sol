@@ -15,9 +15,9 @@ contract AlignStationTest is PRBTest {
   address private to = address(2);
   string private name = "Post";
   string private name2 = "Points"; // or prediction etc.
-  string private interaction = "Qmf3QrPcA2Eda7qcnaK71brbM4cwGuq5iHQvbiaEJWJRhT";
-  string private interaction2 = "Qmf3QrPcA2Eda7qcnaK71brbM4cwGuq5iHQvbiaEJWJRhh";
-  string private link = "Qmf3QrPcA2Eda7qcnaK71brbM4cwGuq5iHQvbiaEJWJRhT"; // ipfs link to interaction definition
+  string private interaction = "bafyreihdaunebldfovtrp6iykh6seyw4hlcnbof6k54djr2gmvd35zvany";
+  string private interaction2 = "bafyreibovgpqyml5m66jwpqcqmicqviixupqznm7lxpp6junas7tduvhwu";
+  string private link = "bafyreihdaunebldfovtrp6iykh6seyw4hlcnbof6k54djr2gmvd35zvany"; // ipfs link to interaction definition
 
   function setUp() public {
     // Admin = address(1)
@@ -27,9 +27,10 @@ contract AlignStationTest is PRBTest {
     intstation = new InteractionStation(address(alignIdContract), address(verifyIPFS));
     address owner = alignIdContract.owner();
     console2.log("owner: %s", owner);
-
+    vm.prank(admin);
     alignIdContract.register(admin);
     // Recipient
+    vm.prank(admin);
     alignIdContract.register(to);
   }
 

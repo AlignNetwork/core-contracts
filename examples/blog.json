@@ -1,0 +1,11 @@
+{
+  "version": "0.1.0",
+  "name": "blog",
+  "summary": "This is a blog post, it will have no more than 100,000 characters. General accepted rules of decency when posting, similar to X (formerly Twitter) rules and policies.",
+  "content": {
+    "from": "align id of poster",
+    "post": "content of post",
+    "image": "link to image",
+    "dateOf": "date posted"
+  }
+}

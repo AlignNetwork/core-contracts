@@ -12,6 +12,7 @@ contract AlignIdRegistry is Ownable {
   error IncorrectId();
 
   uint256 public idCounter;
+  uint256 public devCounter = 10_001;
 
   /// @notice Emitted when a new ID is registered
   /// @param to The address of the user being registered
@@ -26,13 +27,30 @@ contract AlignIdRegistry is Ownable {
   /// @param to The address of the user being registered
   /// @return alignId The new unique ID assigned to the user
   /// @dev Emits a `Register` event upon successful registration
-  function register(address to) public returns (uint256 alignId) {
+  function register(address to) public onlyOwner returns (uint256 alignId) {
     if (idOf[to] != 0) {
       revert IdExists();
     }
 
     // first user would be id 1
     alignId = ++idCounter;
+
+    idOf[to] = alignId;
+
+    emit Register(to, alignId);
+  }
+
+  /// @notice Registers a new ID for a developer
+  /// @param to The address of the user being registered
+  /// @return alignId The new unique ID assigned to the user
+  /// @dev Emits a `Register` event upon successful registration
+  function registerDev(address to) public onlyOwner returns (uint256 alignId) {
+    if (idOf[to] != 0) {
+      revert IdExists();
+    }
+
+    // first user would be id 1
+    alignId = ++devCounter;
 
     idOf[to] = alignId;
 
