@@ -9,6 +9,7 @@ contract AlignIdTest is PRBTest {
   AlignIdRegistry alignId;
   address admin = address(1);
   address user = address(2);
+  address user2 = address(3);
 
   function setUp() public {
     alignId = new AlignIdRegistry();
@@ -48,5 +49,23 @@ contract AlignIdTest is PRBTest {
     uint256 alignIdOfUser = alignId.idOf(user);
     console2.log("alignIdOfUser: %s", alignIdOfUser);
     assertEq(alignIdOfUser, 10_002, "User should have an ID of 10_001");
+  }
+
+  function testTransferId() public {
+    // Register a new ID for the user
+    alignId.register(user);
+
+    // Check that the ID was registered
+    uint256 alignIdOfUser = alignId.idOf(user);
+    console2.log("alignIdOfUser: %s", alignIdOfUser);
+    assertEq(alignIdOfUser, 1, "User should have an ID of 1");
+
+    // Transfer the ID to another user
+    alignId.transferId(user, user2);
+
+    // Check that the ID was transferred
+    uint256 alignIdOfUser2 = alignId.idOf(user2);
+    console2.log("alignIdOfUser2: %s", alignIdOfUser2);
+    assertEq(alignIdOfUser2, 1, "User2 should have an ID of 1");
   }
 }

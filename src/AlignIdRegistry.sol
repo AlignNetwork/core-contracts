@@ -65,4 +65,9 @@ contract AlignIdRegistry is Ownable {
     alignId = idOf[to];
     if (alignId == 0) revert NoId();
   }
+
+  function transferId(address from, address to) public onlyOwner {
+    idOf[to] = idOf[from];
+    idOf[from] = 0;
+  }
 }
