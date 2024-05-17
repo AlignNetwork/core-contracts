@@ -9,7 +9,7 @@ import "forge-std/src/console2.sol";
 contract Deploy is BaseScript {
   function run() public broadcast returns (InteractionStation intStation) {
     // Define Contracts Deployed on Align Testnet
-    intStation = InteractionStation(0x53C2b512a644E8c652df0396b0e53046f9ceC251);
+    intStation = InteractionStation(0xf581E6dfA593346E9c8163dD3Ed533ba9733A97a);
 
     // Define the Interaction Name
     string memory name = "Post";

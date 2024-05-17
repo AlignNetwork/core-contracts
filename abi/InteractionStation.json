@@ -1,0 +1,235 @@
+{
+  "abi": [
+    {
+      "type": "constructor",
+      "inputs": [
+        { "name": "_alignIdContract", "type": "address", "internalType": "address" },
+        { "name": "_verifyIPFS", "type": "address", "internalType": "address" }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "addLink",
+      "inputs": [
+        { "name": "interactionTypeKey", "type": "bytes32", "internalType": "bytes32" },
+        { "name": "newLink", "type": "string", "internalType": "string" }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "alignIdContract",
+      "inputs": [],
+      "outputs": [{ "name": "", "type": "address", "internalType": "contract AlignIdRegistry" }],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "cancelOwnershipHandover",
+      "inputs": [],
+      "outputs": [],
+      "stateMutability": "payable"
+    },
+    {
+      "type": "function",
+      "name": "completeOwnershipHandover",
+      "inputs": [{ "name": "pendingOwner", "type": "address", "internalType": "address" }],
+      "outputs": [],
+      "stateMutability": "payable"
+    },
+    {
+      "type": "function",
+      "name": "createInteractionType",
+      "inputs": [
+        { "name": "fungible", "type": "bool", "internalType": "bool" },
+        { "name": "onlyCreator", "type": "bool", "internalType": "bool" },
+        { "name": "name", "type": "string", "internalType": "string" },
+        { "name": "link", "type": "string", "internalType": "string" },
+        { "name": "referenceKeys", "type": "bytes32[]", "internalType": "bytes32[]" }
+      ],
+      "outputs": [{ "name": "key", "type": "bytes32", "internalType": "bytes32" }],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "dispute",
+      "inputs": [
+        { "name": "disputedInteractionKey", "type": "bytes32", "internalType": "bytes32" },
+        { "name": "disputeInteraction", "type": "bytes32", "internalType": "bytes32" }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "getInteractionFungible",
+      "inputs": [
+        { "name": "issuerAlignId", "type": "uint256", "internalType": "uint256" },
+        { "name": "toAlignId", "type": "uint256", "internalType": "uint256" },
+        { "name": "interactionTypeKey", "type": "bytes32", "internalType": "bytes32" },
+        { "name": "interactionData", "type": "string", "internalType": "string" }
+      ],
+      "outputs": [{ "name": "interaction", "type": "string", "internalType": "string" }],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getInteractionNonFungible",
+      "inputs": [
+        { "name": "issuerAlignId", "type": "uint256", "internalType": "uint256" },
+        { "name": "toAlignId", "type": "uint256", "internalType": "uint256" },
+        { "name": "interactionKey", "type": "bytes32", "internalType": "bytes32" }
+      ],
+      "outputs": [{ "name": "interaction", "type": "string", "internalType": "string" }],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getInteractionTypeKey",
+      "inputs": [
+        { "name": "issuerAlignId", "type": "uint256", "internalType": "uint256" },
+        { "name": "name", "type": "string", "internalType": "string" }
+      ],
+      "outputs": [{ "name": "", "type": "bytes32", "internalType": "bytes32" }],
+      "stateMutability": "pure"
+    },
+    {
+      "type": "function",
+      "name": "interact",
+      "inputs": [
+        { "name": "toAlignId", "type": "uint256", "internalType": "uint256" },
+        { "name": "interactionTypeKey", "type": "bytes32", "internalType": "bytes32" },
+        { "name": "interaction", "type": "string", "internalType": "string" }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "isinteractionTypeRegistered",
+      "inputs": [{ "name": "interactionKey", "type": "bytes32", "internalType": "bytes32" }],
+      "outputs": [{ "name": "", "type": "bool", "internalType": "bool" }],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "owner",
+      "inputs": [],
+      "outputs": [{ "name": "result", "type": "address", "internalType": "address" }],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "ownershipHandoverExpiresAt",
+      "inputs": [{ "name": "pendingOwner", "type": "address", "internalType": "address" }],
+      "outputs": [{ "name": "result", "type": "uint256", "internalType": "uint256" }],
+      "stateMutability": "view"
+    },
+    { "type": "function", "name": "renounceOwnership", "inputs": [], "outputs": [], "stateMutability": "payable" },
+    {
+      "type": "function",
+      "name": "requestOwnershipHandover",
+      "inputs": [],
+      "outputs": [],
+      "stateMutability": "payable"
+    },
+    {
+      "type": "function",
+      "name": "transferOwnership",
+      "inputs": [{ "name": "newOwner", "type": "address", "internalType": "address" }],
+      "outputs": [],
+      "stateMutability": "payable"
+    },
+    {
+      "type": "function",
+      "name": "updateAlignIdContract",
+      "inputs": [{ "name": "_alignIdContract", "type": "address", "internalType": "address" }],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "verifyIPFS",
+      "inputs": [],
+      "outputs": [{ "name": "", "type": "address", "internalType": "contract VerifyIPFS" }],
+      "stateMutability": "view"
+    },
+    {
+      "type": "event",
+      "name": "Interacted",
+      "inputs": [
+        { "name": "interactionKey", "type": "bytes32", "indexed": true, "internalType": "bytes32" },
+        { "name": "issuerAlignId", "type": "uint256", "indexed": false, "internalType": "uint256" },
+        { "name": "toAlignId", "type": "uint256", "indexed": false, "internalType": "uint256" },
+        { "name": "data", "type": "string", "indexed": false, "internalType": "string" },
+        { "name": "attestationKey2", "type": "bytes32", "indexed": false, "internalType": "bytes32" }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "InteractionDisputed",
+      "inputs": [
+        { "name": "interactionKey", "type": "bytes32", "indexed": true, "internalType": "bytes32" },
+        { "name": "interactionTypeKeyFungible", "type": "bytes32", "indexed": true, "internalType": "bytes32" },
+        { "name": "disputeInteraction", "type": "bytes32", "indexed": false, "internalType": "bytes32" }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "InteractionTypeLinkAdded",
+      "inputs": [
+        { "name": "interactionTypeKey", "type": "bytes32", "indexed": true, "internalType": "bytes32" },
+        { "name": "newLink", "type": "string", "indexed": false, "internalType": "string" }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "InteractionTypeRegistered",
+      "inputs": [
+        { "name": "key", "type": "bytes32", "indexed": true, "internalType": "bytes32" },
+        { "name": "issuerAlignId", "type": "uint256", "indexed": false, "internalType": "uint256" },
+        { "name": "interaction", "type": "string", "indexed": false, "internalType": "string" },
+        { "name": "link", "type": "string", "indexed": false, "internalType": "string" },
+        { "name": "fungible", "type": "bool", "indexed": false, "internalType": "bool" },
+        { "name": "referenceKeys", "type": "bytes32[]", "indexed": false, "internalType": "bytes32[]" }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "OwnershipHandoverCanceled",
+      "inputs": [{ "name": "pendingOwner", "type": "address", "indexed": true, "internalType": "address" }],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "OwnershipHandoverRequested",
+      "inputs": [{ "name": "pendingOwner", "type": "address", "indexed": true, "internalType": "address" }],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "OwnershipTransferred",
+      "inputs": [
+        { "name": "oldOwner", "type": "address", "indexed": true, "internalType": "address" },
+        { "name": "newOwner", "type": "address", "indexed": true, "internalType": "address" }
+      ],
+      "anonymous": false
+    },
+    { "type": "error", "name": "AlreadyInitialized", "inputs": [] },
+    { "type": "error", "name": "AlreadyInteracted", "inputs": [] },
+    { "type": "error", "name": "InteractionTypeExists", "inputs": [] },
+    { "type": "error", "name": "NewOwnerIsZeroAddress", "inputs": [] },
+    { "type": "error", "name": "NoHandoverRequest", "inputs": [] },
+    { "type": "error", "name": "NoInteraction", "inputs": [] },
+    { "type": "error", "name": "NoInteractionType", "inputs": [] },
+    { "type": "error", "name": "NotInteractionCreator", "inputs": [] },
+    { "type": "error", "name": "OnlyCreatorCanReference", "inputs": [] },
+    { "type": "error", "name": "Unauthorized", "inputs": [] }
+  ]
+}
