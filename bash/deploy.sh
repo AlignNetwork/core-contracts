@@ -29,8 +29,12 @@ case $1 in
         # Default 
         blog='{"name":"blog","summary":"This is a blog post, it will have no more than 100,000 characters. General accepted rules of decency when posting, similar to X (formerly Twitter) rules and policies.","content": {"from": "align id of poster","post": "content of post", "image": "link to image","dateOfPost":"date posted"}}'
         post='{"name":"post","summary":"This is a simple post, it will have no more than 128 characters. General accepted rules of decency when posting, similar to X (formerly Twitter) rules and policies.","content": {"from": "align id of poster","post": "content of post", "image": "link to image","dateOfPost":"date posted"}}'
+        dispute='{"name":"dispute","summary":"This is a simple dispute tracker, place all relevant information inside claim.","content": {"to": "align id of recipient","claim": "content of claim","dateOfPost":"date posted"}}'
+        points='{"name":"points","summary":"This is a simple points tracker.","content": {"from": "align id of poster","amount": "number of points","dateAwarded":"date awarded"}}'
         upload "$blog"
         upload "$post"
+        upload "$dispute"
+        upload "$points"
         ;;
     *)
         echo "Usage: $0 {IdRegistry|InteractionStation|DefaultInteractions}"
