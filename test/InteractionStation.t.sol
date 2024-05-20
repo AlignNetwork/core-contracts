@@ -15,9 +15,10 @@ contract AlignStationTest is PRBTest {
   address private to = address(2);
   string private name = "Post";
   string private name2 = "Points"; // or prediction etc.
-  string private interaction = "bafyreihdaunebldfovtrp6iykh6seyw4hlcnbof6k54djr2gmvd35zvany";
-  string private interaction2 = "bafyreibovgpqyml5m66jwpqcqmicqviixupqznm7lxpp6junas7tduvhwu";
-  string private link = "bafyreihdaunebldfovtrp6iykh6seyw4hlcnbof6k54djr2gmvd35zvany"; // ipfs link to interaction definition
+  string private iTypeCID = "bafyreihdaunebldfovtrp6iykh6seyw4hlcnbof6k54djr2gmvd35zvany";
+  string private iTypeCID2 = "bafyreihdaunebldfovtrp6iykh6seyw4hlcnbof6k54djr2gmvd35zvawe";
+  string private iCID = "bafyreibovgpqyml5m66jwpqcqmicqviixupqznm7lxpp6junas7tduvhwu";
+  string private iCID2 = "bafyreihdaunebldfovtrp6iykh6seyw4hlcnbof6k54djr2gmvd35zvany";
 
   function setUp() public {
     // Admin = address(1)
@@ -26,7 +27,6 @@ contract AlignStationTest is PRBTest {
     verifyIPFS = new VerifyIPFS();
     intstation = new InteractionStation(address(alignIdContract), address(verifyIPFS));
     address owner = alignIdContract.owner();
-    console2.log("owner: %s", owner);
     vm.prank(admin);
     alignIdContract.register(admin);
     // Recipient
@@ -38,98 +38,94 @@ contract AlignStationTest is PRBTest {
     // Attester = Admin
     uint256 adminAlignId = alignIdContract.idOf(admin);
     uint256 toAlignId = alignIdContract.idOf(to);
-    bytes32 interactionTypeKey = keccak256(abi.encodePacked(adminAlignId, name));
+    bytes32 iTypeKey = keccak256(abi.encodePacked(adminAlignId, name));
     vm.prank(admin);
-    intstation.createInteractionType(false, false, name, link, new bytes32[](0));
-    assertTrue(intstation.isinteractionTypeRegistered(interactionTypeKey), "Interaction type should be registered");
+    intstation.createIType(false, false, name, iTypeCID, new bytes32[](0));
+    assertTrue(intstation.isITypeRegistered(iTypeKey), "Interaction type should be registered");
 
     vm.prank(admin);
-    intstation.interact(toAlignId, interactionTypeKey, interaction);
+    intstation.interact(toAlignId, iTypeKey, iCID, bytes32(0));
 
-    string memory storedInteraction = intstation.getInteractionNonFungible(adminAlignId, toAlignId, interactionTypeKey);
-    console2.logString(storedInteraction);
-    assertEq(storedInteraction, interaction, "Interaction data does not match");
+    bool storedInteraction = intstation.getICIDNonFungible(adminAlignId, toAlignId, iTypeKey);
+    assertEq(storedInteraction, true, "Interaction data does not match");
 
     vm.expectRevert(bytes4(keccak256("AlreadyInteracted()")));
     vm.prank(admin);
-    intstation.interact(toAlignId, interactionTypeKey, interaction);
+    intstation.interact(toAlignId, iTypeKey, iCID, bytes32(0));
   }
 
   function testGetRegisterFungible() public {
     uint256 adminAlignId = alignIdContract.idOf(admin);
     uint256 toAlignId = alignIdContract.idOf(to);
-    bytes32 interactionTypeKey = keccak256(abi.encodePacked(adminAlignId, name2));
+    bytes32 iTypeKey = keccak256(abi.encodePacked(adminAlignId, name2));
 
     vm.prank(admin);
-    intstation.createInteractionType(true, false, name2, link, new bytes32[](0));
-    assertTrue(intstation.isinteractionTypeRegistered(interactionTypeKey), "Interaction type should be registered");
+    intstation.createIType(true, false, name2, iTypeCID, new bytes32[](0));
+    assertTrue(intstation.isITypeRegistered(iTypeKey), "Interaction type should be registered");
 
-    console2.log(block.timestamp);
     vm.prank(admin);
-    intstation.interact(toAlignId, interactionTypeKey, interaction);
+    intstation.interact(toAlignId, iTypeKey, iCID, bytes32(0));
 
-    string memory storedInteraction = intstation.getInteractionFungible(
-      adminAlignId,
-      toAlignId,
-      interactionTypeKey,
-      interaction
-    );
-    assertEq(storedInteraction, interaction, "Interaction data does not match");
+    bool storedInteraction = intstation.getICIDFungible(adminAlignId, toAlignId, iTypeKey, iCID);
+    assertEq(storedInteraction, true, "Interaction data does not match");
   }
 
   function testRegisterFungible() public {
     uint256 adminAlignId = alignIdContract.idOf(admin);
     uint256 toAlignId = alignIdContract.idOf(to);
-    bytes32 interactionTypeKey = keccak256(abi.encodePacked(adminAlignId, name2));
+    bytes32 iTypeKey = keccak256(abi.encodePacked(adminAlignId, name2));
 
     vm.prank(admin);
-    intstation.createInteractionType(true, false, name2, link, new bytes32[](0));
-    assertTrue(intstation.isinteractionTypeRegistered(interactionTypeKey), "Interaction type should be registered");
+    intstation.createIType(true, false, name2, iTypeCID, new bytes32[](0));
+    assertTrue(intstation.isITypeRegistered(iTypeKey), "Interaction type should be registered");
 
-    console2.log(block.timestamp);
     vm.prank(admin);
-    intstation.interact(toAlignId, interactionTypeKey, interaction);
+    intstation.interact(toAlignId, iTypeKey, iCID, bytes32(0));
 
-    string memory storedInteraction = intstation.getInteractionFungible(
-      adminAlignId,
-      toAlignId,
-      interactionTypeKey,
-      interaction
-    );
-    console2.logString(storedInteraction);
-    assertEq(storedInteraction, interaction, "Interaction data does not match");
+    bool storedInteraction = intstation.getICIDFungible(adminAlignId, toAlignId, iTypeKey, iCID);
+    assertEq(storedInteraction, true, "Interaction data does not match");
     vm.prank(admin);
-    intstation.interact(toAlignId, interactionTypeKey, interaction2);
+    intstation.interact(toAlignId, iTypeKey, iCID2, bytes32(0));
 
-    string memory storedInteraction2 = intstation.getInteractionFungible(
-      adminAlignId,
-      toAlignId,
-      interactionTypeKey,
-      interaction2
-    );
-    assertEq(storedInteraction2, interaction2, "Interaction data does not match");
+    bool storedInteraction2 = intstation.getICIDFungible(adminAlignId, toAlignId, iTypeKey, iCID2);
+    assertEq(storedInteraction2, true, "Interaction data does not match");
 
     vm.startPrank(admin);
     vm.expectRevert(bytes4(keccak256("AlreadyInteracted()")));
-    intstation.interact(toAlignId, interactionTypeKey, interaction);
+    intstation.interact(toAlignId, iTypeKey, iCID, bytes32(0));
     vm.stopPrank();
   }
 
   function testAlreadyInteractedFungibleRevert() public {
     uint256 adminAlignId = alignIdContract.idOf(admin);
-    bytes32 interactionTypeKey = keccak256(abi.encodePacked(adminAlignId, name));
+    bytes32 iTypeKey = keccak256(abi.encodePacked(adminAlignId, name));
 
     vm.prank(admin);
-    intstation.createInteractionType(true, false, name, link, new bytes32[](0));
+    intstation.createIType(true, false, name, iTypeCID, new bytes32[](0));
 
     // First interaction
     uint256 toAlignId = alignIdContract.idOf(to);
     vm.prank(admin);
-    intstation.interact(toAlignId, interactionTypeKey, interaction);
+    intstation.interact(toAlignId, iTypeKey, iCID, bytes32(0));
 
     // Expecting a revert on attempting a second identical interaction
     vm.prank(admin);
     vm.expectRevert(bytes4(keccak256("AlreadyInteracted()")));
-    intstation.interact(toAlignId, interactionTypeKey, interaction);
+    intstation.interact(toAlignId, iTypeKey, iCID, bytes32(0));
+  }
+
+  function testAddITypeCID() public {
+    uint256 adminAlignId = alignIdContract.idOf(admin);
+    bytes32 iTypeKey = keccak256(abi.encodePacked(adminAlignId, name));
+
+    vm.prank(admin);
+    intstation.createIType(true, false, name, iTypeCID, new bytes32[](0));
+
+    vm.prank(admin);
+    intstation.addITypeCID(iTypeKey, iTypeCID2);
+
+    string memory storedInteraction = intstation.getITypeCID(iTypeKey);
+    console2.logString(storedInteraction);
+    assertEq(storedInteraction, iTypeCID2, "Interaction data does not match");
   }
 }

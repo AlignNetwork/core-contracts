@@ -1,5 +1,5 @@
-openzeppelin-solidity/=node_modules/openzeppelin-solidity/contracts/
-@openzeppelin/contracts/=node_modules/openzeppelin-solidity/contracts/
+@openzeppelin/contracts/=node_modules/openzeppelin-contracts/contracts/
+@openzeppelin/contracts-upgradeable/=node_modules/openzeppelin-contracts-upgradeable/contracts/
 @prb/test/=node_modules/@prb/test/
 forge-std/=node_modules/forge-std
 hardhat/=node_modules/hardhat/

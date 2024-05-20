@@ -47,7 +47,6 @@ contract AlignIdTest is PRBTest {
 
     // Check that the ID was registered
     uint256 alignIdOfUser = alignId.idOf(user);
-    console2.log("alignIdOfUser: %s", alignIdOfUser);
     assertEq(alignIdOfUser, 10_002, "User should have an ID of 10_001");
   }
 
@@ -57,15 +56,15 @@ contract AlignIdTest is PRBTest {
 
     // Check that the ID was registered
     uint256 alignIdOfUser = alignId.idOf(user);
-    console2.log("alignIdOfUser: %s", alignIdOfUser);
     assertEq(alignIdOfUser, 1, "User should have an ID of 1");
 
     // Transfer the ID to another user
+    vm.startPrank(user);
     alignId.transferId(user, user2);
+    vm.stopPrank();
 
     // Check that the ID was transferred
     uint256 alignIdOfUser2 = alignId.idOf(user2);
-    console2.log("alignIdOfUser2: %s", alignIdOfUser2);
     assertEq(alignIdOfUser2, 1, "User2 should have an ID of 1");
   }
 }

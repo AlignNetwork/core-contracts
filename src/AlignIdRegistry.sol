@@ -19,6 +19,11 @@ contract AlignIdRegistry is Ownable {
   /// @param id The unique ID assigned to the user
   event Register(address indexed to, uint256 indexed id);
 
+  /// @notice Emitted when a new ID is transferred
+  /// @param from The address of the user being transferred
+  /// @param to The address of the user being transferred
+  event TransferId(uint256 id, address indexed from, address indexed to);
+
   constructor() {
     _initializeOwner(msg.sender);
   }
@@ -66,8 +71,16 @@ contract AlignIdRegistry is Ownable {
     if (alignId == 0) revert NoId();
   }
 
-  function transferId(address from, address to) public onlyOwner {
+  function transferId(address from, address to) public {
+    if (idOf[from] == 0) revert("Source address has no ID");
+
+    if (idOf[to] != 0) revert("Destination address already has an ID");
+
+    if (msg.sender != from) revert Unauthorized();
+
     idOf[to] = idOf[from];
     idOf[from] = 0;
+
+    emit TransferId(idOf[from], from, to);
   }
 }

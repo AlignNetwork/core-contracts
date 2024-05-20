@@ -6,8 +6,11 @@ import "./auth/Ownable.sol";
 import "./VerifyIPFS.sol";
 
 /// @title InteractionStation
-/// @notice This contract allows for the attestation of claims by attesters for users.
-/// @dev This contract utilizes mappings to store attestations and user information.
+/// @notice This contract allows for recording and managing offchain interactions.
+/// @dev This contract utilizes mappings to store interactions and user information.
+/// @dev iTypeKey references an InteractionType
+/// @dev iKey references an Interaction
+/// @dev iCID / iTypeCID references Interaction data or InteractionType data stored on IPFS using the CIDv1 format
 contract InteractionStation is Ownable {
   error NoInteractionType();
   error InteractionTypeExists();
@@ -18,67 +21,64 @@ contract InteractionStation is Ownable {
 
   struct Interaction {
     bytes32 key;
-    string data;
-    bytes32[] disputes;
+    string iCID;
+    bytes32 parentIKey;
   }
 
   /// Interaction type
-  struct InteractionType {
+  struct IType {
     bytes32 key;
     uint256 issuerAlignId;
     string name;
     bool fungible;
     bool onlyCreator;
-    bytes32[] referenceKeys;
-    string[] links;
+    bytes32[] parentKeys;
+    string[] iTypeCID;
   }
 
   /// @notice Emitted when a new interaction is made
-  /// @param interactionKey The key of the claim being attested to
+  /// @param iKey The key of the interaction
+  /// @param iTypeKey The key of the interaction
   /// @param issuerAlignId The address of the issuer
   /// @param toAlignId The unique ID of the user for whom the interaction is made
-  /// @param data The interaction data
-  /// @param attestationKey2 The key of the attestation
-  event Interacted(
-    bytes32 indexed interactionKey,
+  /// @param iCID The interaction
+  /// @param fungibleKey The key if fungibleKey
+  /// @param parentIKey The key of the referenced interaction
+  event Interact(
+    bytes32 indexed iKey,
+    bytes32 indexed iTypeKey,
     uint256 issuerAlignId,
     uint256 toAlignId,
-    string data,
-    bytes32 attestationKey2
+    string iCID,
+    bytes32 fungibleKey,
+    bytes32 parentIKey
   );
 
-  /// @notice Emitted when a new interaction type link is added to a interaction type
-  /// @param interactionTypeKey The key of the interaction type
-  /// @param newLink The new interaction link
-  event InteractionTypeLinkAdded(bytes32 indexed interactionTypeKey, string newLink);
-
-  /// @notice Emitted when a new interaction is disputed
-  /// @param interactionKey The key of the interaction
-  /// @param interactionTypeKeyFungible The key of the client type
-  /// @param disputeInteraction The disputed interaction
-  event InteractionDisputed(
-    bytes32 indexed interactionKey,
-    bytes32 indexed interactionTypeKeyFungible,
-    bytes32 disputeInteraction
-  );
-
-  mapping(bytes32 key => mapping(bytes32 => Interaction interaction)) private _interactions;
-  mapping(bytes32 interactionTypeKey => InteractionType interactionType) private _interactionTypeRegistry;
+  /// @notice Emitted when a new interaction type CID is added to a interaction type
+  /// @param iTypeKey The key of the interaction type
+  /// @param iCID The new interaction CID
+  event ITypeCIDAdded(bytes32 indexed iTypeKey, string iCID);
 
   /// @notice Emitted when a new type is stored
-  /// @param key The key of the claim being stored
-  /// @param issuerAlignId The address of the attester
-  /// @param interaction The type of attestation being stored
-  /// @param link The link to additional Information about the Claim
-  /// @param fungible Whether the claim is fungible
+  /// @param key The key of the interaction being stored
+  /// @param issuerAlignId The address of the issuer
+  /// @param name The name of interaction being stored
+  /// @param iTypeCID The link to additional Information about the interaction
+  /// @param fungible Whether the interaction is fungible
+  /// @param parentKeys The keys of the referenced InteractionTypes
   event InteractionTypeRegistered(
     bytes32 indexed key,
     uint256 issuerAlignId,
-    string interaction,
-    string link,
+    string name,
+    string iTypeCID,
     bool fungible,
-    bytes32[] referenceKeys
+    bytes32[] parentKeys
   );
+
+  /// @notice Mapping of Interactions
+  mapping(bytes32 key => mapping(bytes32 => Interaction interaction)) private _interactions;
+  /// @notice Mapping of InteractionTypes
+  mapping(bytes32 interactionTypeKey => IType interactionType) private _iTypeRegistry;
 
   // id Contract
   AlignIdRegistry public alignIdContract;
@@ -92,146 +92,142 @@ contract InteractionStation is Ownable {
   }
 
   /// @notice Creates a new Interaction Type
+  /// @param fungible Whether the claim is fungible
+  /// @param onlyCreator Whether the claim is only creatable by the issuer
   /// @param name The reference name of the interaction
-  /// @param link The link to additional Information about the Claim
+  /// @param iTypeCID The link to additional Information about the Claim
+  /// @param parentKeys The keys of the referenced InteractionTypes
   /// @dev Emits a `interactionTypeRegistered` event upon successful storage
-  function createInteractionType(
+  function createIType(
     bool fungible,
     bool onlyCreator,
     string calldata name,
-    string calldata link,
-    bytes32[] calldata referenceKeys
+    string calldata iTypeCID,
+    bytes32[] calldata parentKeys
   ) external returns (bytes32 key) {
-    verifyIPFS.isCIDv1(link);
+    verifyIPFS.isCIDv1(iTypeCID);
     uint256 issuerAlignId = alignIdContract.readId(msg.sender);
     key = keccak256(abi.encodePacked(issuerAlignId, name));
 
-    if (_interactionTypeRegistry[key].key != 0) revert InteractionTypeExists();
+    if (_iTypeRegistry[key].key != 0) revert InteractionTypeExists();
 
-    _interactionTypeRegistry[key] = InteractionType({
+    _iTypeRegistry[key] = IType({
       key: key,
       issuerAlignId: issuerAlignId,
       name: name,
       fungible: fungible,
       onlyCreator: onlyCreator,
-      referenceKeys: new bytes32[](0),
-      links: new string[](0)
+      parentKeys: new bytes32[](0),
+      iTypeCID: new string[](0)
     });
 
-    for (uint256 i = 0; i < referenceKeys.length; i++) {
-      if (_interactionTypeRegistry[referenceKeys[i]].key == 0) revert NoInteractionType();
-      if (_interactionTypeRegistry[referenceKeys[i]].onlyCreator) revert OnlyCreatorCanReference();
-      _interactionTypeRegistry[key].referenceKeys.push(referenceKeys[i]);
+    for (uint256 i = 0; i < parentKeys.length; i++) {
+      if (_iTypeRegistry[parentKeys[i]].key == 0) revert NoInteractionType();
+      if (_iTypeRegistry[parentKeys[i]].onlyCreator) revert OnlyCreatorCanReference();
+      _iTypeRegistry[key].parentKeys.push(parentKeys[i]);
     }
 
-    _interactionTypeRegistry[key].links.push(link);
+    _iTypeRegistry[key].iTypeCID.push(iTypeCID);
 
-    emit InteractionTypeRegistered(key, issuerAlignId, name, link, fungible, referenceKeys);
+    emit InteractionTypeRegistered(key, issuerAlignId, name, iTypeCID, fungible, parentKeys);
   }
 
   /// @notice Create a new interaction
-  /// @param toAlignId The address of the user for whom the interaction is being made
-  /// @param interactionTypeKey The key of the interaction
-  /// @param interaction The interaction data
+  /// @param toAlignId The id of the user for whom the interaction is being made
+  /// @param iTypeKey The key of the interaction
+  /// @param iCID The interaction data
+  /// @param parentIKey The key of the referenced interaction
   /// @dev Emits an `Interacted` event upon successful interaction
-  function interact(uint256 toAlignId, bytes32 interactionTypeKey, string calldata interaction) external {
-    verifyIPFS.isCID(interaction);
+  function interact(
+    uint256 toAlignId,
+    bytes32 iTypeKey,
+    string calldata iCID,
+    bytes32 parentIKey
+  ) external returns (bytes32 iKey, bytes32 fungibleKey) {
+    verifyIPFS.isCID(iCID);
     uint256 issuerAlignId = alignIdContract.readId(msg.sender);
 
     // check if interactionTypeKey exists in
-    if (_interactionTypeRegistry[interactionTypeKey].key == 0) revert NoInteractionType();
+    if (_iTypeRegistry[iTypeKey].key == 0) revert NoInteractionType();
 
-    // check if issuer is allowed to interact
-    if (
-      _interactionTypeRegistry[interactionTypeKey].onlyCreator &&
-      issuerAlignId != _interactionTypeRegistry[interactionTypeKey].issuerAlignId
-    ) revert NotInteractionCreator();
+    // check if issuer is allowed to interactITypeCIDAdded
+    if (_iTypeRegistry[iTypeKey].onlyCreator && issuerAlignId != _iTypeRegistry[iTypeKey].issuerAlignId)
+      revert NotInteractionCreator();
 
     // Create interaction key
-    bytes32 interactionKey = keccak256(abi.encodePacked(issuerAlignId, toAlignId, interactionTypeKey));
-    bytes32 fungibleKey = 0;
+    iKey = keccak256(abi.encodePacked(issuerAlignId, toAlignId, iTypeKey));
+    fungibleKey = 0;
 
-    if (_interactionTypeRegistry[interactionTypeKey].fungible) {
-      fungibleKey = keccak256(abi.encodePacked(interaction));
-      if (_interactions[interactionKey][fungibleKey].key != 0) revert AlreadyInteracted();
-      _interactions[interactionKey][fungibleKey] = Interaction(interactionKey, interaction, new bytes32[](0));
+    if (_iTypeRegistry[iTypeKey].fungible) {
+      fungibleKey = keccak256(abi.encodePacked(iCID));
+      if (_interactions[iKey][fungibleKey].key != 0) revert AlreadyInteracted();
+      _interactions[iKey][fungibleKey] = Interaction(iKey, iCID, parentIKey);
     } else {
-      if (_interactions[interactionKey][fungibleKey].key != 0) revert AlreadyInteracted();
-      _interactions[interactionKey][fungibleKey] = Interaction(interactionKey, interaction, new bytes32[](0));
+      if (_interactions[iKey][fungibleKey].key != 0) revert AlreadyInteracted();
+      _interactions[iKey][fungibleKey] = Interaction(iKey, iCID, parentIKey);
     }
 
-    emit Interacted(interactionTypeKey, issuerAlignId, toAlignId, interaction, fungibleKey);
+    emit Interact(iKey, iTypeKey, issuerAlignId, toAlignId, iCID, fungibleKey, parentIKey);
   }
 
-  function dispute(bytes32 disputedInteractionKey, bytes32 disputeInteraction) external {
-    // check if interaction exists
-    if (_interactions[disputedInteractionKey][0].key == 0) revert NoInteraction();
-
-    // check if interaction is fungible
-    bytes32 fungibleKey;
-    if (_interactions[disputedInteractionKey][0].key == 0) fungibleKey = 0;
-    else fungibleKey = keccak256(abi.encodePacked(disputedInteractionKey));
-    _interactions[disputedInteractionKey][fungibleKey].disputes.push(disputeInteraction);
-
-    emit InteractionDisputed(disputedInteractionKey, fungibleKey, disputeInteraction);
-  }
-
-  function getInteractionFungible(
+  function getICIDFungible(
     uint256 issuerAlignId,
     uint256 toAlignId,
-    bytes32 interactionTypeKey,
-    string calldata interactionData
-  ) external view returns (string memory interaction) {
-    bytes32 interactionKey = keccak256(abi.encodePacked(issuerAlignId, toAlignId, interactionTypeKey));
-    bytes32 fungibleKey = keccak256(abi.encodePacked(interactionData)); // Now correctly using interaction data for the fungible key
+    bytes32 iTypeKey,
+    string calldata iCID
+  ) external view returns (bool exists) {
+    bytes32 iKey = keccak256(abi.encodePacked(issuerAlignId, toAlignId, iTypeKey));
+    bytes32 fungibleKey = keccak256(abi.encodePacked(iCID));
 
-    if (_interactions[interactionKey][fungibleKey].key == 0) revert NoInteraction();
-
-    interaction = _interactions[interactionKey][fungibleKey].data;
-    return interaction;
+    if (_interactions[iKey][fungibleKey].key == 0) exists = false;
+    else exists = true;
   }
 
-  function getInteractionNonFungible(
+  function getICIDNonFungible(
     uint256 issuerAlignId,
     uint256 toAlignId,
-    bytes32 interactionKey
-  ) external view returns (string memory interaction) {
-    bytes32 attestationKey = keccak256(abi.encodePacked(issuerAlignId, toAlignId, interactionKey));
-    attestationKey = _interactions[attestationKey][0].key;
-    interaction = _interactions[attestationKey][0].data;
+    bytes32 iTypeKey
+  ) external view returns (bool exists) {
+    bytes32 key = keccak256(abi.encodePacked(issuerAlignId, toAlignId, iTypeKey));
+    key = _interactions[key][0].key;
+    if (_interactions[key][0].key == 0) exists = false;
+    else exists = true;
+  }
+
+  function getITypeCID(bytes32 iTypeKey) external view returns (string memory iCID) {
+    for (uint256 i = 0; i < _iTypeRegistry[iTypeKey].iTypeCID.length; i++) {
+      iCID = _iTypeRegistry[iTypeKey].iTypeCID[i];
+    }
   }
 
   /// @notice Retrieves the claim for a specific issuer and type
   /// @param issuerAlignId The address of the issuer
   /// @param name The  being retrieved
-  /// @return interactionKey The key of the interaction
+  /// @return iKey The key of the interaction
   /// @dev Reverts if no ID exists for the given address
-  function getInteractionTypeKey(uint256 issuerAlignId, string calldata name) external pure returns (bytes32) {
+  function getITypeKey(uint256 issuerAlignId, string calldata name) external pure returns (bytes32) {
     return keccak256(abi.encodePacked(issuerAlignId, name));
   }
 
   /// @notice Adds a new interaction link to a interaction type
-  /// @param interactionTypeKey The key for the interaction type
-  /// @param newLink The new interaction link to add
+  /// @param iTypeKey The key for the interaction type
+  /// @param iTypeCID The new interaction cid to add
   /// @dev Emits an `interactionTypeLinkAdded` event upon successful addition of a new link
-  function addLink(bytes32 interactionTypeKey, string calldata newLink) external {
+  function addITypeCID(bytes32 iTypeKey, string calldata iTypeCID) external {
     // Access control: Ensure only the issuer creator
-    require(
-      alignIdContract.readId(msg.sender) == _interactionTypeRegistry[interactionTypeKey].issuerAlignId,
-      "Unauthorized"
-    );
+    if (alignIdContract.readId(msg.sender) != _iTypeRegistry[iTypeKey].issuerAlignId) revert Unauthorized();
 
     // Ensure the Interaction type exists
-    require(_interactionTypeRegistry[interactionTypeKey].key != 0, "Interaction type does not exist");
+    if (_iTypeRegistry[iTypeKey].key == 0) revert NoInteractionType();
 
-    // Add the new link to the array
-    _interactionTypeRegistry[interactionTypeKey].links.push(newLink);
+    // Add the new cid to the array
+    _iTypeRegistry[iTypeKey].iTypeCID.push(iTypeCID);
 
-    emit InteractionTypeLinkAdded(interactionTypeKey, newLink);
+    emit ITypeCIDAdded(iTypeKey, iTypeCID);
   }
 
-  function isinteractionTypeRegistered(bytes32 interactionKey) external view returns (bool) {
-    return _interactionTypeRegistry[interactionKey].key != 0;
+  function isITypeRegistered(bytes32 iTypeKey) external view returns (bool) {
+    return _iTypeRegistry[iTypeKey].key != 0;
   }
 
   function updateAlignIdContract(address _alignIdContract) external onlyOwner {
