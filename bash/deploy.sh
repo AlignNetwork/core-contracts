@@ -8,7 +8,7 @@ deploy_script() {
     echo "Deploying $script_name..."
     unset PRIVATE_KEY
     unset ETH_FROM
-    source .env && forge script script/$script_name:Deploy --fork-url $RPC_URL --broadcast --private-key $PRIVATE_KEY --legacy --skip-simulation --gas-price 0 --gas-limit 1000000000 -vvv --via-ir
+    source .env && forge script script/$script_name:Deploy --fork-url $RPC_URL --broadcast --private-key $PRIVATE_KEY --legacy --skip-simulation -vvv --via-ir
     
     #localhost: 
     #source .env && forge script script/$script_name:Deploy --rpc-url http://localhost:8545 --broadcast

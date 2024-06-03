@@ -12,7 +12,7 @@ contract AlignIdTest is PRBTest {
   address user2 = address(3);
   address withdrawer = address(4);
   address treasury = address(5);
-  uint256 private protocolFee = 0.002 ether;
+  uint256 private protocolFee = 0 ether;
 
   // Events
   event AlignIdRegistered(address indexed to, uint256 indexed id);
