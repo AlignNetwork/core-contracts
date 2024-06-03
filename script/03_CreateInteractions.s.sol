@@ -9,7 +9,7 @@ import "forge-std/src/console2.sol";
 contract Deploy is BaseScript {
   function run() public broadcast returns (InteractionStation intStation) {
     // Define Contracts Deployed on Align Testnet
-    intStation = InteractionStation(0xf581E6dfA593346E9c8163dD3Ed533ba9733A97a);
+    intStation = InteractionStation(0x6F5Bfd716Cf7F7dB4A3e312D591d5b42275fF8c0);
 
     // Parent Keys
     bytes32[] memory parentKeys = new bytes32[](0);
@@ -28,7 +28,7 @@ contract Deploy is BaseScript {
     // Define the Interaction IPFS Hash (generated from ./bash/upload.sh, see README for instructions)
     string memory iTypeCID2 = "bafyreib5xt5jddlzz6ymfysm2vzyyfhs43yqoch6spucgucze3yiszivsu";
     // Create the Interaction Type
-    bytes32 key2 = intStation.createIType(true, true, name2, iTypeCID2, parentKeys);
+    bytes32 key2 = intStation.createIType(true, false, name2, iTypeCID2, parentKeys);
     console2.logBytes32(key2);
     //InteractionTypeKey:  0x37bc0487179bf0e5859e1e81de587362f08f1e99a4dd4818e7ec9db5acbe85d4
 
@@ -49,5 +49,22 @@ contract Deploy is BaseScript {
     bytes32 key4 = intStation.createIType(true, true, name4, iTypeCID4, parentKeys);
     console2.logBytes32(key4);
     //InteractionTypeKey:  0xeb5b8c1f556f61bc01e9276ec4536dbe23e4240b8487374f984d6031e5cd21dc
+
+    // Define the Interaction Name
+    string memory name5 = "Blog2";
+    // Define the Interaction IPFS Hash (generated from ./bash/upload.sh, see README for instructions)
+    string memory iTypeCID5 = "bafyreievxqcpnsjlbupugzaqkklrqcd3ngs7wbcmfzq4ulsnpahykdonkm";
+    // Create the Interaction Type
+    bytes32 key5 = intStation.createIType(true, false, name5, iTypeCID5, parentKeys);
+    console2.logBytes32(key5);
+    //InteractionTypeKey:  0x37bc0487179bf0e5859e1e81de587362f08f1e99a4dd4818e7ec9db5acbe85d4
+
+    // Define the Interaction Name
+    string memory name6 = "Profile";
+    // Define the Interaction IPFS Hash (generated from ./bash/upload.sh, see README for instructions)
+    string memory iTypeCID6 = "bafyreiepkdmnbw66cqz4jqg4uukuhxopbgl4jspyx37rowtsf25b7oywh4";
+    // Create the Interaction Type
+    bytes32 key6 = intStation.createIType(true, false, name6, iTypeCID6, parentKeys);
+    console2.logBytes32(key6);
   }
 }

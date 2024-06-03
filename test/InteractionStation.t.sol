@@ -11,6 +11,7 @@ contract AlignStationTest is PRBTest {
   InteractionStation private intstation;
   AlignIdRegistry private alignIdContract;
   VerifyIPFS private verifyIPFS;
+  uint256 private protocolFee = 0.002 ether;
   address private admin = address(1);
   address private to = address(2);
   string private name = "Post";
@@ -22,16 +23,23 @@ contract AlignStationTest is PRBTest {
 
   function setUp() public {
     // Admin = address(1)
-    vm.prank(admin);
-    alignIdContract = new AlignIdRegistry();
+    vm.deal(admin, 1 ether);
+    vm.startPrank(admin);
+    alignIdContract = new AlignIdRegistry(protocolFee, address(5)); // Initialize with a registration fee
     verifyIPFS = new VerifyIPFS();
     intstation = new InteractionStation(address(alignIdContract), address(verifyIPFS));
-    address owner = alignIdContract.owner();
-    vm.prank(admin);
-    alignIdContract.register(admin);
-    // Recipient
-    vm.prank(admin);
-    alignIdContract.register(to);
+    vm.stopPrank();
+    // Admin registration
+    vm.deal(admin, protocolFee);
+    vm.startPrank(admin);
+    alignIdContract.register{ value: protocolFee }();
+    vm.stopPrank();
+
+    // Recipient registration
+    vm.deal(to, protocolFee);
+    vm.startPrank(to);
+    alignIdContract.register{ value: protocolFee }();
+    vm.stopPrank();
   }
 
   function testCreateInteractionType() public {
@@ -125,7 +133,6 @@ contract AlignStationTest is PRBTest {
     intstation.addITypeCID(iTypeKey, iTypeCID2);
 
     string memory storedInteraction = intstation.getITypeCID(iTypeKey);
-    console2.logString(storedInteraction);
     assertEq(storedInteraction, iTypeCID2, "Interaction data does not match");
   }
 }

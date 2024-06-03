@@ -9,9 +9,9 @@ import "forge-std/src/console2.sol";
 
 contract Deploy is BaseScript {
   function run() public broadcast returns (InteractionStation alignStationImpl) {
-    AlignIdRegistry aidr = AlignIdRegistry(0xD821932b7d8F2DE2e53845E4b8ab66aD661cA130);
-    VerifyIPFS verifyIPFS = VerifyIPFS(0x16BB489abDCE7f194052Dd3097DBB0DBE2d1F805);
+    AlignIdRegistry aidr = AlignIdRegistry(0x9b9d85e9eD23CB6AbCD3128CB70ECfdF6C406689);
+    VerifyIPFS verifyIPFS = VerifyIPFS(0xd56C687294923C04C6c62F31FF2722336B37aC89);
     alignStationImpl = new InteractionStation(address(aidr), address(verifyIPFS)); // Replace address(1) with your admin address
-    // Returns: 0xf581E6dfA593346E9c8163dD3Ed533ba9733A97a
+    // Returns: 0x6F5Bfd716Cf7F7dB4A3e312D591d5b42275fF8c0
   }
 }

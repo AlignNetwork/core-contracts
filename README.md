@@ -8,9 +8,9 @@ Implementing the Align Protocol
 
 | Name               | Address                                    | abi                                 | network          | version |
 | ------------------ | ------------------------------------------ | ----------------------------------- | ---------------- | ------- |
-| AlignIdRegistry    | 0xD821932b7d8F2DE2e53845E4b8ab66aD661cA130 | [abi](/abi/AlignIdRegistry.json)    | Align Testnet v2 | v0.1.0  |
-| VerifyIPFS         | 0x16BB489abDCE7f194052Dd3097DBB0DBE2d1F805 | [abi](/abi/VerifyIPFS.json)         | Align Testnet v2 | v0.1.0  |
-| InteractionStation | 0xf581E6dfA593346E9c8163dD3Ed533ba9733A97a | [abi](/abi/InteractionStation.json) | Align Testnet v2 | v0.1.0  |
+| AlignIdRegistry    | 0xD821932b7d8F2DE2e53845E4b8ab66aD661cA130 | [abi](/abi/AlignIdRegistry.json)    | Align Testnet v2 | v1.0.0  |
+| VerifyIPFS         | 0x16BB489abDCE7f194052Dd3097DBB0DBE2d1F805 | [abi](/abi/VerifyIPFS.json)         | Align Testnet v2 | v0.0.0  |
+| InteractionStation | 0xf581E6dfA593346E9c8163dD3Ed533ba9733A97a | [abi](/abi/InteractionStation.json) | Align Testnet v2 | v1.0.0  |
 
 ### Create a new Interaction Type
 
@@ -32,3 +32,11 @@ This will create a non fungible, private type for you to interact with.
 6. ensure `RPC_URL` and `PRIVATE_KEY` are set in .env
 7. run: `./deploy.sh MyInteraction`
 8. The `interactionTypeKey` is now used to query using the public indexer at:[indexer link]()
+
+### To Test
+
+`forge test --via-ir --watch -vvv`
+
+### Coverage
+
+`forge coverage --ir-minimum`

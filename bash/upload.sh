@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the URL
-dataNetworkUrl="http://localhost:4200/upload"
+dataNetworkUrl="http://ipfs-dev.align.network/upload"
 
 # Function to upload data
 upload() {
@@ -15,7 +15,7 @@ upload() {
       echo "Error uploading data check network connection"
       exit 1
   fi
-
+  echo $response
   name=$(echo "$data" | grep -o '"name": "[^"]*' | sed 's/"name": "//')
   cid_field=$(echo "$response" | grep -o '"cid":"[^"]*' | sed 's/"cid":"//' | sed 's/".*//')
 

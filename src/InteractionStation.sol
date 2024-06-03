@@ -44,7 +44,7 @@ contract InteractionStation is Ownable {
   /// @param iCID The interaction
   /// @param fungibleKey The key if fungibleKey
   /// @param parentIKey The key of the referenced interaction
-  event Interact(
+  event InteractionAdded(
     bytes32 indexed iKey,
     bytes32 indexed iTypeKey,
     uint256 issuerAlignId,
@@ -60,14 +60,14 @@ contract InteractionStation is Ownable {
   event ITypeCIDAdded(bytes32 indexed iTypeKey, string iCID);
 
   /// @notice Emitted when a new type is stored
-  /// @param key The key of the interaction being stored
+  /// @param iTypeKey The key of the interaction being stored
   /// @param issuerAlignId The address of the issuer
   /// @param name The name of interaction being stored
   /// @param iTypeCID The link to additional Information about the interaction
   /// @param fungible Whether the interaction is fungible
   /// @param parentKeys The keys of the referenced InteractionTypes
-  event InteractionTypeRegistered(
-    bytes32 indexed key,
+  event ITypeRegistered(
+    bytes32 indexed iTypeKey,
     uint256 issuerAlignId,
     string name,
     string iTypeCID,
@@ -129,7 +129,7 @@ contract InteractionStation is Ownable {
 
     _iTypeRegistry[key].iTypeCID.push(iTypeCID);
 
-    emit InteractionTypeRegistered(key, issuerAlignId, name, iTypeCID, fungible, parentKeys);
+    emit ITypeRegistered(key, issuerAlignId, name, iTypeCID, fungible, parentKeys);
   }
 
   /// @notice Create a new interaction
@@ -167,7 +167,7 @@ contract InteractionStation is Ownable {
       _interactions[iKey][fungibleKey] = Interaction(iKey, iCID, parentIKey);
     }
 
-    emit Interact(iKey, iTypeKey, issuerAlignId, toAlignId, iCID, fungibleKey, parentIKey);
+    emit InteractionAdded(iKey, iTypeKey, issuerAlignId, toAlignId, iCID, fungibleKey, parentIKey);
   }
 
   function getICIDFungible(
@@ -232,5 +232,10 @@ contract InteractionStation is Ownable {
 
   function updateAlignIdContract(address _alignIdContract) external onlyOwner {
     alignIdContract = AlignIdRegistry(_alignIdContract);
+  }
+
+  function updateOnlyCreator(bytes32 iTypeKey, bool _onlyCreator) public {
+    if (alignIdContract.readId(msg.sender) != _iTypeRegistry[iTypeKey].issuerAlignId) revert Unauthorized();
+    _iTypeRegistry[iTypeKey].onlyCreator = _onlyCreator;
   }
 }

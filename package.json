@@ -11,7 +11,8 @@
     "merkletreejs": "^0.3.11",
     "openzeppelin-contracts": "github:OpenZeppelin/openzeppelin-contracts#v4.9.5",
     "openzeppelin-contracts-upgradeable": "github:OpenZeppelin/openzeppelin-contracts-upgradeable#v4.9.5",
-    "openzeppelin-foundry-upgrades": "github:OpenZeppelin/openzeppelin-foundry-upgrades"
+    "openzeppelin-foundry-upgrades": "github:OpenZeppelin/openzeppelin-foundry-upgrades",
+    "solmate": "^6.2.0"
   },
   "devDependencies": {
     "@prb/test": "^0.6.4",

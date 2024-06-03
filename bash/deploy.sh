@@ -84,11 +84,52 @@ case $1 in
             "inherits": []
           }
           '
-        upload "$blog"
-        upload "$post"
-        upload "$dispute"
-        upload "$points"
-        upload "$align_points_program_1"
+          blog2='{
+          "version": "0.1.0",
+          "name": "blog new",
+          "summary": "This is a blog post, it will have no more than 100,000 characters. General accepted rules of decency when posting, similar to X (formerly Twitter) rules and policies.",
+          "content": {
+            "from": "align id of poster",
+            "post": "content of post",
+            "image": "link to image",
+            "dateOf": "date posted"
+          }
+        }'
+        profile='{
+          "version": "0.1.0",
+          "name": "align profile",
+          "summary": "This is an Align Profile.",
+          "content": {
+            "image": "link to image",
+            "name": "name of profile",
+            "bio": "short 10000 character bio"
+          }
+        }'
+        zk='{
+          "version": "0.1.0",
+          "name": "twitter zkproof",
+          "summary": "An uploaded zkproof created from the Align Chrome Extension to prove ownership of a Twitter Account.",
+          "content": {
+            "proof": "zk proof from Align Chrome Extension",
+          }
+        }'
+        ai='{
+          "version": "0.1.0",
+          "name": "ai vector embeddings",
+          "summary": "AI vector embeddings storage.",
+          "content": {
+            "vector embeddings": "",
+          }
+        }'
+        #upload "$blog"
+        #upload "$post"
+        #upload "$dispute"
+        #upload "$points"
+        #upload "$align_points_program_1"
+        #upload "$blog2"
+        upload "$profile"
+        #upload "$zk"
+        #upload "$ai"
         ;;
     MyInteraction)
         # Deploy Align Attestation Station
