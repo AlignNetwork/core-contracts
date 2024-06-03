@@ -1,0 +1,6 @@
+{
+  "version": "0.1.0",
+  "name": "dispute",
+  "summary": "This is a simple dispute tracker, place all relevant information inside claim.",
+  "content": { "to": "align id of recipient", "claim": "content of claim", "dateOf": "date posted" }
+}

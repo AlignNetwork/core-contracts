@@ -1,206 +1,57 @@
-# Foundry Template [![Open in Gitpod][gitpod-badge]][gitpod] [![Github Actions][gha-badge]][gha] [![Foundry][foundry-badge]][foundry] [![License: MIT][license-badge]][license]
+# Align Smart Contracts
 
-[gitpod]: https://gitpod.io/#https://github.com/AlignNetwork/core-contracts
-[gitpod-badge]: https://img.shields.io/badge/Gitpod-Open%20in%20Gitpod-FFB45B?logo=gitpod
-[gha]: https://github.com/AlignNetwork/core-contracts/actions
-[gha-badge]: https://github.com/AlignNetwork/core-contracts/actions/workflows/ci.yml/badge.svg
-[foundry]: https://getfoundry.sh/
-[foundry-badge]: https://img.shields.io/badge/Built%20with-Foundry-FFDB1C.svg
-[license]: https://opensource.org/licenses/MIT
-[license-badge]: https://img.shields.io/badge/License-MIT-blue.svg
+Implementing the Align Protocol
 
-A Foundry-based template for developing Solidity smart contracts, with sensible defaults.
+[Spec](https://github.com/AlignNetwork/protocol)
 
-## What's Inside
+### Contracts:
 
-- [Forge](https://github.com/foundry-rs/foundry/blob/master/forge): compile, test, fuzz, format, and deploy smart
-  contracts
-- [Forge Std](https://github.com/foundry-rs/forge-std): collection of helpful contracts and cheatcodes for testing
-- [PRBTest](https://github.com/PaulRBerg/prb-test): modern collection of testing assertions and logging utilities
-- [Prettier](https://github.com/prettier/prettier): code formatter for non-Solidity files
-- [Solhint](https://github.com/protofire/solhint): linter for Solidity code
+| Name               | Address                                    | abi                                 | network             | version |
+| ------------------ | ------------------------------------------ | ----------------------------------- | ------------------- | ------- |
+| AlignIdRegistry    | 0xaE57e1B93DA10a7B5e746B2d17B0b3c7D90B2dDa | [abi](/abi/AlignIdRegistry.json)    | Arbitrum Sepolia    | v1.0.0  |
+| VerifyIPFS         | 0x3298154306f25E98efD779a8DCEB1322C4073345 | [abi](/abi/VerifyIPFS.json)         | Arbitrum Sepolia    | v1.0.0  |
+| InteractionStation | 0xEe8710c0B14155541E151783A8C76422d0d5a676 | [abi](/abi/InteractionStation.json) | Arbitrum Sepolia v2 | v1.0.0  |
 
-## Getting Started
+### Create a new Interaction Type
 
-Click the [`Use this template`](https://github.com/PaulRBerg/foundry-template/generate) button at the top of the page to
-create a new repository with this repo as the initial state.
+When creating a new interaction type you must define the JSON file and upload it to the IPFS compatible Align Data
+Network. Once uploaded use it in a script to register the type.
 
-Or, if you prefer to install the template manually:
+#### Steps
 
-```sh
-$ mkdir my-project
-$ cd my-project
-$ forge init --template PaulRBerg/foundry-template
-$ bun install # install Solhint, Prettier, and other Node.js deps
-```
+This will create a non fungible, private type for you to interact with.
 
-If this is your first time with Foundry, check out the
-[installation](https://github.com/foundry-rs/foundry#installation) instructions.
+1. Get testnet sepolia ethereum for Align Testnet: [Bridge](https://align.network/bridge)
+2. Mint an Align Id from [Mint](https://mint.align.network), if youre a interested developer or researcher, reach out to
+   [@0xglu](http://twitter.com/0xglu) on twitter or in discord.
+3. Create the interaction type (see [examples](/examples)) modify `DefaultInteractions` in `./deploy.sh`
+4. run `chmod +x ./deploy.sh DefaultInteractions` - this will pin your file to the Data Network
+5. Modify the script `./script/4200_MyInteraction.s.sol` (do not rename the script file or else step #5 will not work,
+   you can modify the shell script in #5 if you'd like)
+   1. line #17 - paste the hash from Step #4
+6. ensure `RPC_URL` and `PRIVATE_KEY` are set in .env
+7. run: `./deploy.sh MyInteraction`
+8. The `interactionTypeKey` is now used to query using the public indexer at:[indexer link]()
 
-## Features
+### To Test
 
-This template builds upon the frameworks and libraries mentioned above, so please consult their respective documentation
-for details about their specific features.
-
-For example, if you're interested in exploring Foundry in more detail, you should look at the
-[Foundry Book](https://book.getfoundry.sh/). In particular, you may be interested in reading the
-[Writing Tests](https://book.getfoundry.sh/forge/writing-tests.html) tutorial.
-
-### Sensible Defaults
-
-This template comes with a set of sensible default configurations for you to use. These defaults can be found in the
-following files:
-
-```text
-├── .editorconfig
-├── .gitignore
-├── .prettierignore
-├── .prettierrc.yml
-├── .solhint.json
-├── foundry.toml
-└── remappings.txt
-```
-
-### VSCode Integration
-
-This template is IDE agnostic, but for the best user experience, you may want to use it in VSCode alongside Nomic
-Foundation's [Solidity extension](https://marketplace.visualstudio.com/items?itemName=NomicFoundation.hardhat-solidity).
-
-For guidance on how to integrate a Foundry project in VSCode, please refer to this
-[guide](https://book.getfoundry.sh/config/vscode).
-
-### GitHub Actions
-
-This template comes with GitHub Actions pre-configured. Your contracts will be linted and tested on every push and pull
-request made to the `main` branch.
-
-You can edit the CI script in [.github/workflows/ci.yml](./.github/workflows/ci.yml).
-
-## Installing Dependencies
-
-Foundry typically uses git submodules to manage dependencies, but this template uses Node.js packages because
-[submodules don't scale](https://twitter.com/PaulRBerg/status/1736695487057531328).
-
-This is how to install dependencies:
-
-1. Install the dependency using your preferred package manager, e.g. `bun install dependency-name`
-   - Use this syntax to install from GitHub: `bun install github:username/repo-name`
-2. Add a remapping for the dependency in [remappings.txt](./remappings.txt), e.g.
-   `dependency-name=node_modules/dependency-name`
-
-Note that OpenZeppelin Contracts is pre-installed, so you can follow that as an example.
-
-## Writing Tests
-
-To write a new test contract, you start by importing [PRBTest](https://github.com/PaulRBerg/prb-test) and inherit from
-it in your test contract. PRBTest comes with a pre-instantiated [cheatcodes](https://book.getfoundry.sh/cheatcodes/)
-environment accessible via the `vm` property. If you would like to view the logs in the terminal output you can add the
-`-vvv` flag and use [console.log](https://book.getfoundry.sh/faq?highlight=console.log#how-do-i-use-consolelog).
-
-This template comes with an example test contract [Foo.t.sol](./test/Foo.t.sol)
-
-## Usage
-
-This is a list of the most frequently needed commands.
-
-### Build
-
-Build the contracts:
-
-```sh
-$ forge build
-```
-
-### Clean
-
-Delete the build artifacts and cache directories:
-
-```sh
-$ forge clean
-```
-
-### Compile
-
-Compile the contracts:
-
-```sh
-$ forge build
-```
+`forge test --via-ir --watch -vvv`
 
 ### Coverage
 
-Get a test coverage report:
+`forge coverage --ir-minimum`
 
-```sh
-$ forge coverage
-```
-
-### Deploy
-
-Deploy to Anvil:
-
-```sh
-$ forge script script/Deploy.s.sol --broadcast --fork-url http://localhost:8545
-```
-
-For this script to work, you need to have a `MNEMONIC` environment variable set to a valid
-[BIP39 mnemonic](https://iancoleman.io/bip39/).
-
-For instructions on how to deploy to a testnet or mainnet, check out the
-[Solidity Scripting](https://book.getfoundry.sh/tutorials/solidity-scripting.html) tutorial.
-
-### Format
-
-Format the contracts:
-
-```sh
-$ forge fmt
-```
-
-### Gas Usage
-
-Get a gas report:
-
-```sh
-$ forge test --gas-report
-```
-
-### Lint
-
-Lint the contracts:
-
-```sh
-$ bun run lint
-```
-
-### Test
-
-Run the tests:
-
-```sh
-$ forge test
-```
-
-Generate test coverage and output result to the terminal:
-
-```sh
-$ bun run test:coverage
-```
-
-Generate test coverage with lcov report (you'll have to open the `./coverage/index.html` file in your browser, to do so
-simply copy paste the path):
-
-```sh
-$ bun run test:coverage:report
-```
-
-## Related Efforts
-
-- [abigger87/femplate](https://github.com/abigger87/femplate)
-- [cleanunicorn/ethereum-smartcontract-template](https://github.com/cleanunicorn/ethereum-smartcontract-template)
-- [foundry-rs/forge-template](https://github.com/foundry-rs/forge-template)
-- [FrankieIsLost/forge-template](https://github.com/FrankieIsLost/forge-template)
-
-## License
-
-This project is licensed under MIT.
+| File                               | % Lines         | % Statements     | % Branches     | % Funcs        |
+| ---------------------------------- | --------------- | ---------------- | -------------- | -------------- |
+| script/00_AlignIdRegistry.s.sol    | 0.00% (0/2)     | 0.00% (0/2)      | 100.00% (0/0)  | 0.00% (0/1)    |
+| script/01_VerifyIPFS.s.sol         | 0.00% (0/1)     | 0.00% (0/1)      | 100.00% (0/0)  | 0.00% (0/1)    |
+| script/02_InteractionStation.s.sol | 0.00% (0/3)     | 0.00% (0/5)      | 100.00% (0/0)  | 0.00% (0/1)    |
+| script/03_CreateInteractions.s.sol | 0.00% (0/26)    | 0.00% (0/33)     | 100.00% (0/0)  | 0.00% (0/1)    |
+| script/4200_MyInteraction.s.sol    | 0.00% (0/5)     | 0.00% (0/6)      | 100.00% (0/0)  | 0.00% (0/1)    |
+| script/Base.s.sol                  | 0.00% (0/7)     | 0.00% (0/9)      | 0.00% (0/2)    | 0.00% (0/2)    |
+| src/AlignIdRegistry.sol            | 100.00% (39/39) | 97.87% (46/47)   | 88.46% (23/26) | 100.00% (9/9)  |
+| src/InteractionStation.sol         | 74.47% (35/47)  | 67.14% (47/70)   | 53.85% (14/26) | 63.64% (7/11)  |
+| src/VerifyIPFS.sol                 | 80.00% (8/10)   | 85.71% (12/14)   | 83.33% (5/6)   | 100.00% (2/2)  |
+| src/auth/Ownable.sol               | 5.56% (1/18)    | 5.88% (1/17)     | 0.00% (0/8)    | 30.77% (4/13)  |
+| src/auth/OwnableRoles.sol          | 15.79% (3/19)   | 15.79% (3/19)    | 0.00% (0/6)    | 27.78% (5/18)  |
+| Total                              | 48.59% (86/177) | 48.88% (109/223) | 56.76% (42/74) | 45.00% (27/60) |

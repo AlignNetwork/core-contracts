@@ -1,4 +1,0 @@
-{
-  "rrule": "DTSTART:20240101T000000Z\nRRULE:FREQ=DAILY;UNTIL=20240229T235959Z",
-  "contains": ["Align", "#Align", "#Aligned", "@Align_Network"]
-}

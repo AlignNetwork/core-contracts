@@ -1,0 +1,6 @@
+{
+  "version": "0.1.0",
+  "name": "points",
+  "summary": "This is a simple points tracker.",
+  "content": { "from": "align id of awarder", "amount": "number of points", "dateOf": "date awarded" }
+}

@@ -1,0 +1,21 @@
+{
+  "abi": [
+    {
+      "type": "function",
+      "name": "isCID",
+      "inputs": [{ "name": "hash", "type": "string", "internalType": "string" }],
+      "outputs": [{ "name": "", "type": "bool", "internalType": "bool" }],
+      "stateMutability": "pure"
+    },
+    {
+      "type": "function",
+      "name": "isCIDv1",
+      "inputs": [{ "name": "hash", "type": "string", "internalType": "string" }],
+      "outputs": [{ "name": "", "type": "bool", "internalType": "bool" }],
+      "stateMutability": "pure"
+    },
+    { "type": "error", "name": "NotCID", "inputs": [] },
+    { "type": "error", "name": "NotCIDv0", "inputs": [] },
+    { "type": "error", "name": "NotCIDv1", "inputs": [] }
+  ]
+}
