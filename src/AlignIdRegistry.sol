@@ -19,6 +19,7 @@ contract AlignIdRegistry is OwnableRoles {
   // Role constants
   uint256 public constant PAUSER_ROLE = 1 << 0;
   uint256 public constant WITHDRAWER_ROLE = 1 << 1;
+  uint256 public constant FEE_SETTER_ROLE = 1 << 2;
 
   // Treasury
   address public treasury;
@@ -127,7 +128,7 @@ contract AlignIdRegistry is OwnableRoles {
 
   /// @notice Allows the owner to update the protocol fee
   /// @param newFee The new protocol fee in wei
-  function setProtocolFee(uint256 newFee) public onlyOwner {
+  function setProtocolFee(uint256 newFee) public onlyRolesOrOwner(FEE_SETTER_ROLE) {
     protocolFee = newFee;
     emit ProtocolFeeUpdated(newFee);
   }

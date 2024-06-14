@@ -12,7 +12,7 @@ contract AlignIdTest is PRBTest {
   address user2 = address(3);
   address withdrawer = address(4);
   address treasury = address(5);
-  uint256 private protocolFee = 0 ether;
+  uint256 private protocolFee = 0.0028 ether;
 
   // Events
   event AlignIdRegistered(address indexed to, uint256 indexed id);
@@ -297,6 +297,13 @@ contract AlignIdTest is PRBTest {
     assertEq(alignId.treasury(), address(6), "Treasury should be set");
   }
 
+  function testSetTreasuryShouldFail() public {
+    vm.startPrank(user2);
+    vm.expectRevert(bytes4(keccak256("Unauthorized()")));
+    alignId.setTreasury(address(6));
+    vm.stopPrank();
+  }
+
   function testSetTreasuryShouldFailWhenSetToZeroAddress() public {
     vm.deal(user, protocolFee);
     vm.prank(user);
@@ -342,10 +349,14 @@ contract AlignIdTest is PRBTest {
   }
 
   function testSetProtocolFee() public {
+    vm.startPrank(admin);
+    alignId.grantRoles(user2, alignId.FEE_SETTER_ROLE());
+    vm.stopPrank();
     // Set a new protocol fee
     uint256 newProtocolFee = 1000 ether;
-    vm.prank(admin);
+    vm.startPrank(user2);
     alignId.setProtocolFee(newProtocolFee);
+    vm.stopPrank();
 
     // Check that the new protocol fee is set correctly
     assertEq(alignId.protocolFee(), newProtocolFee, "Protocol fee should be set correctly");

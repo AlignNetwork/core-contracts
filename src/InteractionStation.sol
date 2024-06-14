@@ -2,7 +2,7 @@
 pragma solidity 0.8.19;
 
 import "./AlignIdRegistry.sol";
-import "./auth/Ownable.sol";
+import "./auth/OwnableRoles.sol";
 import "./VerifyIPFS.sol";
 
 /// @title InteractionStation
@@ -11,13 +11,27 @@ import "./VerifyIPFS.sol";
 /// @dev iTypeKey references an InteractionType
 /// @dev iKey references an Interaction
 /// @dev iCID / iTypeCID references Interaction data or InteractionType data stored on IPFS using the CIDv1 format
-contract InteractionStation is Ownable {
+contract InteractionStation is OwnableRoles {
   error NoInteractionType();
   error InteractionTypeExists();
   error AlreadyInteracted();
   error NotInteractionCreator();
   error NoInteraction();
   error OnlyCreatorCanReference();
+  error Paused();
+  error NoTreasurySet();
+  error IncorrectAmount();
+
+  // Role constants
+  uint256 public constant PAUSER_ROLE = 1 << 0;
+  uint256 public constant WITHDRAWER_ROLE = 1 << 1;
+  uint256 public constant FEE_SETTER_ROLE = 1 << 2;
+
+  // Treasury
+  address public treasury;
+  bool public paused;
+
+  uint256 public protocolFee;
 
   struct Interaction {
     bytes32 key;
@@ -75,6 +89,21 @@ contract InteractionStation is Ownable {
     bytes32[] parentKeys
   );
 
+  /// @notice Emitted when the protocol fee is updated
+  /// @param newFee The new protocol fee in wei
+  event ProtocolFeeUpdated(uint256 newFee);
+
+  /// @notice Emitted when the contract is paused or unpaused
+  event PausedState(bool paused);
+
+  /// @notice Emitted when funds are withdrawn
+  /// @param amount The amount of funds withdrawn
+  event Withdrawn(uint256 amount);
+
+  /// @notice Emitted when the treasury address is updated
+  /// @param newTreasury The new treasury address
+  event TreasuryUpdated(address newTreasury);
+
   /// @notice Mapping of Interactions
   mapping(bytes32 key => mapping(bytes32 => Interaction interaction)) private _interactions;
   /// @notice Mapping of InteractionTypes
@@ -85,8 +114,10 @@ contract InteractionStation is Ownable {
   VerifyIPFS public verifyIPFS;
 
   /// @dev Initializes the contract with the AlignId contract
-  constructor(address _alignIdContract, address _verifyIPFS) {
+  constructor(address _alignIdContract, address _verifyIPFS, uint256 _initialFee, address _treasury) {
     _initializeOwner(msg.sender);
+    protocolFee = _initialFee;
+    treasury = _treasury;
     alignIdContract = AlignIdRegistry(_alignIdContract);
     verifyIPFS = VerifyIPFS(_verifyIPFS);
   }
@@ -143,7 +174,11 @@ contract InteractionStation is Ownable {
     bytes32 iTypeKey,
     string calldata iCID,
     bytes32 parentIKey
-  ) external returns (bytes32 iKey, bytes32 fungibleKey) {
+  ) public payable returns (bytes32 iKey, bytes32 fungibleKey) {
+    if (paused) revert Paused();
+    if (msg.value != protocolFee) {
+      revert IncorrectAmount();
+    }
     verifyIPFS.isCID(iCID);
     uint256 issuerAlignId = alignIdContract.readId(msg.sender);
 
@@ -237,5 +272,35 @@ contract InteractionStation is Ownable {
   function updateOnlyCreator(bytes32 iTypeKey, bool _onlyCreator) public {
     if (alignIdContract.readId(msg.sender) != _iTypeRegistry[iTypeKey].issuerAlignId) revert Unauthorized();
     _iTypeRegistry[iTypeKey].onlyCreator = _onlyCreator;
+  }
+
+  /// @notice Allows the owner to update the protocol fee
+  /// @param newFee The new protocol fee in wei
+  function setProtocolFee(uint256 newFee) public onlyRolesOrOwner(FEE_SETTER_ROLE) {
+    protocolFee = newFee;
+    emit ProtocolFeeUpdated(newFee);
+  }
+
+  /// @notice Allows the owner to set the treasury address
+  /// @param newTreasury The new treasury address
+  function setTreasury(address newTreasury) public onlyOwner {
+    if (newTreasury == address(0)) revert NoTreasurySet();
+    treasury = newTreasury;
+    emit TreasuryUpdated(newTreasury);
+  }
+
+  /// @notice Allows the owner to withdraw collected fees
+  function withdraw() public onlyRolesOrOwner(WITHDRAWER_ROLE) {
+    if (treasury == address(0)) {
+      revert NoTreasurySet();
+    }
+    (bool success, ) = payable(treasury).call{ value: address(this).balance }("");
+    require(success, "Withdraw failed");
+  }
+
+  /// @notice Allows the owner or pauser to pause or unpause the contract
+  function setPaused(bool _paused) public onlyRolesOrOwner(PAUSER_ROLE) {
+    paused = _paused;
+    emit PausedState(paused);
   }
 }

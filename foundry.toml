@@ -28,3 +28,7 @@
   quote_style = "double"
   tab_width = 4
   wrap_comments = true
+
+
+[etherscan]
+arbitrum = {key = "${ETHERSCAN_API_KEY_ARBITRUM}"}
