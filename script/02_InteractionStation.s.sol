@@ -10,19 +10,19 @@ import "forge-std/src/console2.sol";
 
 contract Deploy is Script {
   function run() public returns (InteractionStation alignStationImpl) {
+    address worker = vm.envOr({ name: "WORKER", defaultValue: address(0) });
+    address treasury = vm.envOr({ name: "TREASURY", defaultValue: address(0) });
+    address vipfs = vm.envOr({ name: "VERIFYIPFS_CONTRACT", defaultValue: address(0) });
+    address alignId = vm.envOr({ name: "ALIGNID_CONTRACT", defaultValue: address(0) });
+
     vm.startBroadcast();
-    AlignIdRegistry aidr = AlignIdRegistry(0x35Ca546EC4Bc72aBBc59731af15bA6D802fa625C);
-    VerifyIPFS verifyIPFS = VerifyIPFS(0x94006b400D299469CB1157334D6A95f2BE8C251B);
-    alignStationImpl = new InteractionStation(
-      address(aidr),
-      address(verifyIPFS),
-      0.00028 ether,
-      0x6AEebD700ced60FAc2a912140aCc96340df806c9
-    );
-    // Returns: 0xBd9f89E3784840E5F56c958ED99Eb5297D52391a
-    alignStationImpl.grantRoles(0x3b478Bc113cE8Fd0777e68CdE100F64b9fa63792, alignStationImpl.PAUSER_ROLE());
-    alignStationImpl.grantRoles(0x3b478Bc113cE8Fd0777e68CdE100F64b9fa63792, alignStationImpl.FEE_SETTER_ROLE());
-    alignStationImpl.grantRoles(0x3b478Bc113cE8Fd0777e68CdE100F64b9fa63792, alignStationImpl.WITHDRAWER_ROLE());
+    AlignIdRegistry aidr = AlignIdRegistry(alignId);
+    VerifyIPFS verifyIPFS = VerifyIPFS(vipfs);
+    alignStationImpl = new InteractionStation(address(aidr), address(verifyIPFS), 0.00028 ether, treasury);
+    // Returns:
+    alignStationImpl.grantRoles(worker, alignStationImpl.PAUSER_ROLE());
+    alignStationImpl.grantRoles(worker, alignStationImpl.FEE_SETTER_ROLE());
+    alignStationImpl.grantRoles(worker, alignStationImpl.WITHDRAWER_ROLE());
     vm.stopBroadcast();
   }
 }

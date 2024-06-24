@@ -31,4 +31,4 @@
 
 
 [etherscan]
-arbitrum = {key = "${ETHERSCAN_API_KEY_ARBITRUM}"}
+optimism = {key = "${API_KEY_OPTIMISTIC_ETHERSCAN}"}

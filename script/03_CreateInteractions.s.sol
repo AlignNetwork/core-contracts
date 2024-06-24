@@ -8,62 +8,48 @@ import "forge-std/src/console2.sol";
 
 contract Deploy is Script {
   function run() public returns (InteractionStation intStation) {
+    address intStationAddress = vm.envOr({ name: "INTERACTIONSTATION_CONTRACT", defaultValue: address(0) });
     vm.startBroadcast();
     // Define Contracts Deployed on Arbitrum
-    intStation = InteractionStation(0xBd9f89E3784840E5F56c958ED99Eb5297D52391a);
+    intStation = InteractionStation(intStationAddress);
 
     // Parent Keys
     bytes32[] memory parentKeys = new bytes32[](0);
 
-    /*
-    // Define the Interaction Name
-    string memory name = "Post";
+    /* // Define the Interaction Name
+    string memory name = "NFT";
     // Define the Interaction IPFS Hash (generated from ./bash/upload.sh, see README for instructions)
-    string memory iTypeCID = "bafyreihdaunebldfovtrp6iykh6seyw4hlcnbof6k54djr2gmvd35zvany";
+    string memory iTypeCID = "bafyreihufviukzlecs6btoce4bkrqdebfbg3k4nyjadcpz6xhj4isxw6t4";
     // Create the Interaction Type
-    bytes32 key = intStation.createIType(true, true, name, iTypeCID, parentKeys);
+    bytes32 key = intStation.createIType(true, false, name, iTypeCID, parentKeys);
     console2.logBytes32(key);
-    //InteractionTypeKey: 0x30abf47b1bc62b7c4a62363358e236cf55104f33cd9aa5b6d0766177ff04f450
-    
+    // InteractionTypeKey: 0xa1b79868ca9899a72250bee77b0fae11fa916612624db2f9314a606857b486de
 
     // Define the Interaction Name
-    string memory name2 = "Blog";
+    string memory name1 = "File";
     // Define the Interaction IPFS Hash (generated from ./bash/upload.sh, see README for instructions)
-    string memory iTypeCID2 = "bafyreib5xt5jddlzz6ymfysm2vzyyfhs43yqoch6spucgucze3yiszivsu";
+    string memory iTypeCID1 = "bafyreidwnrosplylb2tohmkphwr6puwgszegh6cbfnvc2l7fjy5sdr7aiu";
+    // Create the Interaction Type
+    bytes32 key1 = intStation.createIType(true, false, name1, iTypeCID1, parentKeys);
+    console2.logBytes32(key1);
+    // InteractionTypeKey: 0xa1b79868ca9899a72250bee77b0fae11fa916612624db2f9314a606857b486de
+
+    // Define the Interaction Name
+    string memory name2 = "Meme";
+    // Define the Interaction IPFS Hash (generated from ./bash/upload.sh, see README for instructions)
+    string memory iTypeCID2 = "bafyreibuhgptzc4qtjkibjmqvnosqvnxeazdym2qb72aahwjfqkkueryjy";
     // Create the Interaction Type
     bytes32 key2 = intStation.createIType(true, false, name2, iTypeCID2, parentKeys);
-    console2.logBytes32(key2);
-    //InteractionTypeKey:  0x37bc0487179bf0e5859e1e81de587362f08f1e99a4dd4818e7ec9db5acbe85d4
+    console2.logBytes32(key2); */
+    // InteractionTypeKey: 0xa1b79868ca9899a72250bee77b0fae11fa916612624db2f9314a606857b486de
 
-    
-
+    // Create the Interaction Type
     string memory name3 = "Dispute";
     // Define the Interaction IPFS Hash (generated from ./bash/upload.sh, see README for instructions)
-    string memory iTypeCID3 = "bafyreifvhntzospkaogvsuzsavzvrlawtvwgsac3lubqd5tj7c7ccl4dum";
+    string memory iTypeCID3 = "bafyreiezsbnvcjagvzwkys27xmmtmaa4bes2ioofrs2wh6hi7gmzgtufqi";
     // Create the Interaction Type
-    bytes32 key3 = intStation.createIType(true, true, name3, iTypeCID3, parentKeys);
+    bytes32 key3 = intStation.createIType(true, false, name3, iTypeCID3, parentKeys);
     console2.logBytes32(key3);
-    //InteractionTypeKey:  0x5ccef2e75faf813914ca81514683bb551f97b0dabb1a7b88078d8d047c8d71d1
-
-    
-    // Define the Interaction Name
-    string memory name4 = "Points";
-    // Define the Interaction IPFS Hash (generated from ./bash/upload.sh, see README for instructions)
-    string memory iTypeCID4 = "bafyreibovgpqyml5m66jwpqcqmicqviixupqznm7lxpp6junas7tduvhwu";
-    // Create the Interaction Type
-    bytes32 key4 = intStation.createIType(true, true, name4, iTypeCID4, parentKeys);
-    console2.logBytes32(key4);
-    //InteractionTypeKey:  0xeb5b8c1f556f61bc01e9276ec4536dbe23e4240b8487374f984d6031e5cd21dc
-    */
-
-    // Define the Interaction Name
-    string memory name6 = "File";
-    // Define the Interaction IPFS Hash (generated from ./bash/upload.sh, see README for instructions)
-    string memory iTypeCID6 = "bafyreidwnrosplylb2tohmkphwr6puwgszegh6cbfnvc2l7fjy5sdr7aiu";
-    // Create the Interaction Type
-    bytes32 key6 = intStation.createIType(true, false, name6, iTypeCID6, parentKeys);
-    console2.logBytes32(key6);
-    // InteractionTypeKey: 0xa1b79868ca9899a72250bee77b0fae11fa916612624db2f9314a606857b486de
     vm.stopBroadcast();
   }
 }

@@ -1,37 +1,32 @@
 # Align Smart Contracts
 
-Implementing the Align Protocol
-
-[Spec](https://github.com/AlignNetwork/protocol)
-
 ### Contracts:
 
-| Name               | Address                                    | abi                                 | network             | version |
-| ------------------ | ------------------------------------------ | ----------------------------------- | ------------------- | ------- |
-| AlignIdRegistry    | 0xaE57e1B93DA10a7B5e746B2d17B0b3c7D90B2dDa | [abi](/abi/AlignIdRegistry.json)    | Arbitrum Sepolia    | v1.0.0  |
-| VerifyIPFS         | 0x3298154306f25E98efD779a8DCEB1322C4073345 | [abi](/abi/VerifyIPFS.json)         | Arbitrum Sepolia    | v1.0.0  |
-| InteractionStation | 0xEe8710c0B14155541E151783A8C76422d0d5a676 | [abi](/abi/InteractionStation.json) | Arbitrum Sepolia v2 | v1.0.0  |
+| Name               | Address                                                                                                                                   | abi                                 | network           | version |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- | ----------------- | ------- |
+| AlignIdRegistry    | [0x169610100A7A25CF154C26b1A811FEf8592b27A8](https://optimistic.etherscan.io/address/0x169610100A7A25CF154C26b1A811FEf8592b27A8)          | [abi](/abi/AlignIdRegistry.json)    | Optimisim         | v1.0.0  |
+| InteractionStation | [0xBb03fabb5709B52eC483314c964a187Bf447E508](https://optimistic.etherscan.io/address/0xBb03fabb5709B52eC483314c964a187Bf447E508)          | [abi](/abi/InteractionStation.json) | Optimisim         | v1.0.0  |
+| VerifyIPFS         | [0xaE57e1B93DA10a7B5e746B2d17B0b3c7D90B2dDa](https://optimistic.etherscan.io/address/0xaE57e1B93DA10a7B5e746B2d17B0b3c7D90B2dDa)          | [abi](/abi/VerifyIPFS.json)         | Optimisim         | v1.0.0  |
+| AlignIdRegistry    | [0x9CF4844B40e534c63A03C7F87E66A78F36fc92cA](https://sepolia-optimistic.etherscan.io/address/0x9CF4844B40e534c63A03C7F87E66A78F36fc92cA)  | [abi](/abi/AlignIdRegistry.json)    | Optimisim Sepolia | v1.0.0  |
+| InteractionStation | [0x03158C08249e9DEEf562012BCA9001d9D686C692](https://sepolia-optimistic.etherscan.io/address/0x03158C08249e9DEEf562012BCA9001d9D686C692)  | [abi](/abi/InteractionStation.json) | Optimisim Sepolia | v1.0.0  |
+| VerifyIPFS         | [0x20D0D19865b7b995667F7cB7c8ab5D0D774a10F4](https://sepolia-optimistic.etherscan.io/address/0x20D0D19865b7b995667F7cB7c8ab5D0D774a10F4)( | [abi](/abi/VerifyIPFS.json)         | Optimisim Sepolia | v1.0.0  |
 
 ### Create a new Interaction Type
 
 When creating a new interaction type you must define the JSON file and upload it to the IPFS compatible Align Data
-Network. Once uploaded use it in a script to register the type.
+Network. Once uploaded use it in a script to register the type. Check `03_CreateInteractions.s.sol`
 
-#### Steps
+### Accompanying Typescript Repo
 
-This will create a non fungible, private type for you to interact with.
+[typescript SDK Repo](https://github.com/alignnetwork/align-sdk)
 
-1. Get testnet sepolia ethereum for Align Testnet: [Bridge](https://align.network/bridge)
-2. Mint an Align Id from [Mint](https://mint.align.network), if youre a interested developer or researcher, reach out to
-   [@0xglu](http://twitter.com/0xglu) on twitter or in discord.
-3. Create the interaction type (see [examples](/examples)) modify `DefaultInteractions` in `./deploy.sh`
-4. run `chmod +x ./deploy.sh DefaultInteractions` - this will pin your file to the Data Network
-5. Modify the script `./script/4200_MyInteraction.s.sol` (do not rename the script file or else step #5 will not work,
-   you can modify the shell script in #5 if you'd like)
-   1. line #17 - paste the hash from Step #4
-6. ensure `RPC_URL` and `PRIVATE_KEY` are set in .env
-7. run: `./deploy.sh MyInteraction`
-8. The `interactionTypeKey` is now used to query using the public indexer at:[indexer link]()
+### Deploy
+
+`./bash/deploy.sh {IdRegistry|VerifyIPFS|InteractionStation|VerifyContracts|CreateInteractions|ChangeRoles} {mainnet|testnet}`
+
+### Upload to Align Network
+
+`./bash/upload.sh`
 
 ### To Test
 
