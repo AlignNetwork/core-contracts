@@ -3,7 +3,7 @@
 deploy_mainnet() {
     local script_name=$1
     echo "Deploying $script_name... to mainnet"
-    source .env.prod && forge script script/$script_name:Deploy --account OPALIGNDEPLOYER --fork-url $RPC_URL --broadcast -vvv --via-ir --verify
+    source .env.prod && forge script script/$script_name:Deploy --sender $AOWNER --account AOWNER --fork-url $RPC_URL --broadcast -vvv --via-ir --verify
     
     echo "Deployed $script_name to mainnet!"
 }
@@ -62,11 +62,11 @@ case $script in
         # Deploy Align Attestation Station
         deploy_script "03_CreateInteractions.s.sol" $network
         ;;
-    ChangeRoles)
+    UpdatePrices)
         # Deploy Align Attestation Station
-        deploy_script "X1_AlignIdChangeRoles.s.sol" $network
+        deploy_script "XX_UpdatePrices.s.sol" $network
         ;;
     *)
-        echo "Usage: $0 {AlignIdRegistry|InteractionStation|VerifyIPFS|CreateInteractions|ChangeRoles} {mainnet|testnet}"
+        echo "Usage: $0 {AlignIdRegistry|InteractionStation|VerifyIPFS|CreateInteractions|UpdatePrices} {mainnet|testnet}"
         exit 1
 esac
